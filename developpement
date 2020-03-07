@@ -1,0 +1,46 @@
+
+Developpement
+
+Fonctionnalités
+
+Client MPC
+
+Ecouter radio
+
+Ecouter youtube
+
+Facile à utiliser avec LIRC
+
+Pouvoir jouer des mélodies programmées
+
+
+
+Technique
+
+Monter la partition
+mount /dev/sda1 /var/lib/mpd/music
+
+
+tui-rs + termion
+
+crate mpd
+
+mappage boutons IRC
+
+Ecran
+Ecran Tactile Officiel 7" 800x480
+Terminal 100x30
+
+  500  vi /etc/default/console-setup
+FONTFACE="Terminus"
+FONTSIZE="16x32"
+  501  /etc/init.d/console-setup.sh restart
+Terminal 50x15
+
+
+Afficher un clavier
+
+
+
+
+

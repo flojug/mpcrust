@@ -36,6 +36,7 @@ pub trait Widget {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox);
     fn key(&mut self, key: u8) -> Option<Action>;
     fn refresh(&mut self, items: Vec<String>, idx: usize) {}
+    fn set_current(&mut self, s: &String) {}
 }
 
 #[derive(Debug)]
@@ -45,19 +46,11 @@ pub enum ItemState {
     NotSelected
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub enum PointerState {
-    Over,
-    NotOver
-}
-
 
 #[derive(Debug)]
 pub struct Button {
     item: String,
     state: ItemState,
-    over: PointerState,
     key: u8,
     col: color::Rgb,
     action: Option<Action>
@@ -65,7 +58,7 @@ pub struct Button {
 
 impl Button {
     pub fn new(item: &str, state: ItemState, key: u8, col: color::Rgb, action: Option<Action>) -> Button {
-        Button { item: String::from(item), state, over: PointerState::NotOver, key, col, action }
+        Button { item: String::from(item), state, key, col, action }
     }
 
     pub fn get_len(&self) -> u16 {
@@ -82,8 +75,6 @@ impl Widget for Button {
       sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", scbox.w as usize)[..], self.col.clone());
       if self.state == ItemState::Selected {
         sc.bgline(scbox.x, scbox.y, &self.item[..], self.col.clone());
-      } else if self.over == PointerState::Over {
-        sc.uline(scbox.x, scbox.y, &self.item[..], color::Rgb(255,255,255));
       } else {
         sc.line(scbox.x, scbox.y, &self.item[..], color::Rgb(255,255,255));
       }
@@ -115,12 +106,11 @@ impl ListItemPannel {
     fn init_items(stritems: Vec<String>, idx: usize) -> Vec<Item> {
         let mut items = vec!();
         for stritem in stritems {
-            let item = Item {item: stritem, state: ItemState::NotSelected, over: PointerState::NotOver, key: b'p', col: color::Rgb(0,255,0), action: None };
+            let item = Item {item: stritem, state: ItemState::NotSelected, key: b'p', col: color::Rgb(0,255,0), action: None };
             items.push(item);
         }
         if items.len() > idx {
             items[idx].state = ItemState::Selected;
-            items[idx].over = PointerState::Over;
         }
         items
     }
@@ -130,7 +120,7 @@ impl Widget for ListItemPannel {
 
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
 
-        if let Some(idx_over) = self.items.iter().position(|item| (*item).over == PointerState::Over) {
+        if let Some(idx_over) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
             let idx = idx_over as u16;
             //sc.line(20, 15, &format!("{} {} {}", idx, self.first_line, scbox.h)[..], color::Rgb(255,255,255));
             if idx < self.first_line {
@@ -153,43 +143,44 @@ impl Widget for ListItemPannel {
         }
     }
 
-    fn key(&mut self, key: u8) -> Option<Action> {
+    // set current item with given value
+    fn set_current(&mut self, s: &String) {
+        debug!("set_current {}", *s);
+        debug!("{:?}", self.items);
+        if let Some(idxcur) = self.items.iter().position(|item| (*item).item == *s) {
+            for idx in 0..self.items.len() {
+                self.items[idx].state = ItemState::NotSelected;
+            }
+            debug!("{}", idxcur);
+            self.items[idxcur].state = ItemState::Selected;
+        }
+    }
 
+    fn key(&mut self, key: u8) -> Option<Action> {
         let mut ret = None;
 
         // find index which button is over
         // per default it is the selected
         let mut idx: usize = 0;
         let mut idx_sel: usize = 0;
-        let mut found = false;
+        idx = 0;
         for button in &self.items {
-            if (*button).over == PointerState::Over {
-                found = true;
+            if (*button).state == ItemState::Selected {
                 break;
             }
             idx = idx + 1;
-        }
-        if !found {
-            idx = 0;
-            for button in &self.items {
-                if (*button).state == ItemState::Selected {
-                    found = true;
-                    break;
-                }
-                idx = idx + 1;
-                idx_sel = idx;
-            }
+            idx_sel = idx;
         }
 
         if (key == b'x') && (idx < self.items.len()-1) {  // down
-            self.items[idx].over = PointerState::NotOver;
-            self.items[idx+1].over = PointerState::Over;
+            self.items[idx].state = ItemState::NotSelected;
+            self.items[idx+1].state = ItemState::Selected;
             return None;
         }
 
         if (key == b'e') && (idx > 0) {  // up
-            self.items[idx].over = PointerState::NotOver;
-            self.items[idx-1].over = PointerState::Over;
+            self.items[idx].state = ItemState::NotSelected;
+            self.items[idx-1].state = ItemState::Selected;
             return None;
         }
 
@@ -216,14 +207,6 @@ impl Widget for ListItemPannel {
         }
 
         if key == b'p' {  // select
-            // select current overed button
-            self.items.iter_mut()
-                .filter(|button| (*button).state == ItemState::Selected)
-                .for_each(|button| (*button).state = ItemState::NotSelected);
-            self.items.iter_mut()
-                .filter(|button| (*button).over == PointerState::Over)
-                .for_each(|button| (*button).state = ItemState::Selected);
-
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.select_action {
                     _=> return None
@@ -428,45 +411,26 @@ impl Widget for ButtonPannelOneLine {
         // find index which button is over
         // per default it is the selected
         let mut idx: usize = 0;
-        let mut found = false;
+        idx = 0;
         for button in &self.buttons {
-            if (*button).over == PointerState::Over {
-                found = true;
+            if (*button).state == ItemState::Selected {
                 break;
             }
             idx = idx + 1;
         }
-        if !found {
-            idx = 0;
-            for button in &self.buttons {
-                if (*button).state == ItemState::Selected {
-                    found = true;
-                    break;
-                }
-                idx = idx + 1;
-            }
-        }
 
         if (key == b's') && (idx > 0) {  // left
-            self.buttons[idx].over = PointerState::NotOver;
-            self.buttons[idx-1].over = PointerState::Over;
+            self.buttons[idx].state = ItemState::NotSelected;
+            self.buttons[idx-1].state = ItemState::Selected;
             return None;
         }
         if (key == b'd') && (idx < self.buttons.len()-1) {  // right
-            self.buttons[idx].over = PointerState::NotOver;
-            self.buttons[idx+1].over = PointerState::Over;
+            self.buttons[idx].state = ItemState::NotSelected;
+            self.buttons[idx+1].state = ItemState::Selected;
             return None;
         }
 
         if key == b'p' {
-            // select current overed button
-            self.buttons.iter_mut()
-                .filter(|button| (*button).state == ItemState::Selected)
-                .for_each(|button| (*button).state = ItemState::NotSelected);
-            self.buttons.iter_mut()
-                .filter(|button| (*button).over == PointerState::Over)
-                .for_each(|button| (*button).state = ItemState::Selected);
-
             if let Some(idx) = self.buttons.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.buttons[idx].action {
                     Some(Action::SwitchWindow(which))=> return Some(Action::SwitchWindow(which)),

@@ -13,3 +13,5 @@ use widgets::*;
 
 pub mod mpc;
 use mpc::*;
+
+#[macro_use] extern crate log;

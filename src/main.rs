@@ -9,12 +9,26 @@ use std::{thread, time};
 use mpcrust::window::*;
 use mpcrust::mpc::*;
 
+#[macro_use] extern crate log;
+extern crate simplelog;
+use simplelog::*;
+use std::fs::File;
 
 fn main() {
+
+    CombinedLogger::init(
+        vec![
+            WriteLogger::new(LevelFilter::Debug, Config::default(), File::create("/tmp/mpcrust.log").unwrap()),
+        ]
+    ).unwrap();
+
+    debug!("Lancement mpcrust ==============");
+
     let mut mpc = Mpc::new("127.0.0.1", "6600");
 
     let stdout = stdout();
     let mut wind = Window::new(&stdout, &mut mpc);
+    let mut currentsong = String::from("");
 
     wind.clean();
     wind.draw();
@@ -35,8 +49,10 @@ fn main() {
             Err(TryRecvError::Empty) => {},
             Err(TryRecvError::Disconnected) => panic!("Channel disconnected"),
         }
-        wind.refresh();
-        sleep(200);
+        if (wind.refreshable()) {
+            wind.draw();
+        }
+        sleep(100);
     }
 }
 

@@ -11,6 +11,7 @@ use crate::widgets::*;
 
 use crate::mpc::*;
 
+
 fn getBUTTONS_1() -> Vec<Button> {
     let mut v = Vec::new();
     v.push(Button::new("1-QUEUE", ItemState::Selected, b'1', color::Rgb(255,0,0), Some(Action::SwitchWindow(1))));
@@ -111,6 +112,7 @@ pub struct Window<'a>{
   current_color: SubWindow,
   mpc: &'a mut Mpc,
   idx_current_song: usize,
+  current_song: String,
 }
 
 impl<'a> Window<'a> {
@@ -128,7 +130,7 @@ impl<'a> Window<'a> {
     panels.push(Box::new(ListItemPannel::new(mpc.navigate(), Some(Action::UpSearch(0)), Some(Action::DownSearch(0)), None, Some(Action::SelSearch(0, false)) )));
 
     //let red_controler = Controler::new(
-    Window {panels, screen, red: 0, green: 1, blue: 2, current_color: SubWindow::Red, mpc, idx_current_song:0 }
+    Window {panels, screen, red: 0, green: 1, blue: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from("") }
   }
 
   pub fn stop(&mut self) {
@@ -145,20 +147,39 @@ impl<'a> Window<'a> {
 
   // play first song
   pub fn init(&mut self) {
+    self.mpc.random(false);
+    self.mpc.repeat(false);
+    self.mpc.single(false);
+    self.mpc.consume(false);
     self.apply(Some(Action::PlaySong(0)));
   }
 
   // refresh current song
-  pub fn refresh(&mut self) {
-    if let Some(idx_song) = self.mpc.get_current_song() {
-      if (self.green==1) && (self.idx_current_song!=idx_song) {
-        self.panels[1].key(b'x');
-        self.panels[1].key(b'p');
-      }
-      if self.idx_current_song != idx_song {
-        self.idx_current_song = idx_song;
-      }
+  pub fn refreshable(&mut self) -> bool {
+
+    let mut refr = false;
+
+    if let Some(song) = self.mpc.current_song() {
+        let title = if song.title.is_some() {song.title.clone().unwrap()} else {song.file.clone()};
+        if (title != self.current_song) {
+            debug!("{}", title);
+            self.panels[1].set_current(&title);
+            self.current_song = title;
+            refr = true;
+        }
     }
+
+    refr
+
+    // if let Some(idx_song) = self.mpc.get_current_song() {
+    //   if (self.green==1) && (self.idx_current_song!=idx_song) {
+    //     self.panels[1].key(b'x');
+    //     self.panels[1].key(b'p');
+    //   }
+    //   if self.idx_current_song != idx_song {
+    //     self.idx_current_song = idx_song;
+    //   }
+    // }
   }
 
   pub fn key(&mut self, key: u8) {

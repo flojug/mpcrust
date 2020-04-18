@@ -9,6 +9,7 @@ use std::cmp;
 
 use indextree::Arena;
 
+
 #[derive(Debug)]
 pub struct SongNode {
     name: String,
@@ -98,12 +99,13 @@ impl Mpc {
         self.test_connect();
         let songs = if ! self.conn.queue().is_err() {self.conn.queue().unwrap()} else {vec!()};
         songs.iter().map(|s| {
-            let title = if s.title.is_some() {s.title.clone().unwrap()} else {s.file.clone()};
+            let title = s.title.clone().unwrap_or(s.file.clone());
+            //let title = if s.title.is_some() {s.title.clone().unwrap()} else {s.file.clone()};
             let mut artist = String::from("");
             if s.tags.contains_key("Artist") {
                 artist = s.tags["Artist"].clone();
             }
-            format!("{} - {}", artist, title)
+            format!("{}", title)
         }).collect()
     }
 
@@ -116,6 +118,14 @@ impl Mpc {
         None
     }
 
+    pub fn current_song(&mut self) -> Option<mpd::Song> {
+        let song = self.conn.currentsong();
+        if !song.is_err() {
+            return song.unwrap();
+        } else {
+            return None;
+        }
+    }
 
     pub fn stop(&mut self) {
         self.test_connect();
@@ -125,6 +135,26 @@ impl Mpc {
     pub fn play(&mut self) {
         self.test_connect();
         self.conn.play();
+    }
+
+    pub fn random(&mut self, value: bool) {
+        self.test_connect();
+        self.conn.random(value);
+    }
+
+    pub fn consume(&mut self, value: bool) {
+        self.test_connect();
+        self.conn.consume(value);
+    }
+
+    pub fn repeat(&mut self, value: bool) {
+        self.test_connect();
+        self.conn.repeat(value);
+    }
+
+    pub fn single(&mut self, value: bool) {
+        self.test_connect();
+        self.conn.single(value);
     }
 
     pub fn down(&mut self, idx: usize) -> Vec<String> {

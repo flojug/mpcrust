@@ -51,6 +51,7 @@ fn main() {
         }
         if (wind.refreshable()) {
             wind.draw();
+
         }
         sleep(100);
     }

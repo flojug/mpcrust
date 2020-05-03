@@ -23,6 +23,7 @@ pub enum Action {
     SwitchWindow(u16),
     PlaySong(usize),
     SelSearch(usize, bool),
+    SelRadio(usize),
     UpSearch(usize),
     DownSearch(usize),
     Play,
@@ -221,6 +222,7 @@ impl Widget for ListItemPannel {
                 match self.apply_action {
                     Some(Action::PlaySong(_))=> return Some(Action::PlaySong(idx)),
                     Some(Action::SelSearch(_, _)) => return Some(Action::SelSearch(idx, true)),
+                    Some(Action::SelRadio(_)) => return Some(Action::SelRadio(idx)),
                     _=> return None
                 };
             }

@@ -98,8 +98,9 @@ impl Mpc {
     pub fn get_songs(&mut self) -> Vec<String> {
         self.test_connect();
         let songs = if ! self.conn.queue().is_err() {self.conn.queue().unwrap()} else {vec!()};
+        debug!("{:?}", songs);
         songs.iter().map(|s| {
-            let title = s.title.clone().unwrap_or(s.file.clone());
+            let title = s.name.clone().unwrap_or(s.title.clone().unwrap_or(s.file.clone()));
             //let title = if s.title.is_some() {s.title.clone().unwrap()} else {s.file.clone()};
             let mut artist = String::from("");
             if s.tags.contains_key("Artist") {
@@ -135,6 +136,11 @@ impl Mpc {
     pub fn play(&mut self) {
         self.test_connect();
         self.conn.play();
+    }
+
+    pub fn clear(&mut self) {
+        self.test_connect();
+        self.conn.clear();
     }
 
     pub fn random(&mut self, value: bool) {
@@ -198,6 +204,15 @@ impl Mpc {
                 self.conn.push(s);
             }
         }
+    }
+
+    pub fn select_radio(&mut self, station: String, url: String) {
+        self.test_connect();
+        self.conn.clear();
+        let mut song = mpd::Song::default();
+        song.file = url;
+        song.title = Some(station);
+        self.conn.push(song);
     }
 
     pub fn up(&mut self, idx: usize) -> Vec<String> {

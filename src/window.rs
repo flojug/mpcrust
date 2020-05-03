@@ -11,6 +11,8 @@ use crate::widgets::*;
 
 use crate::mpc::*;
 
+use crate::radio::*;
+
 
 fn getBUTTONS_1() -> Vec<Button> {
     let mut v = Vec::new();
@@ -113,11 +115,12 @@ pub struct Window<'a>{
   mpc: &'a mut Mpc,
   idx_current_song: usize,
   current_song: String,
+  radios: &'a mut RadioList
 }
 
 impl<'a> Window<'a> {
 
-  pub fn new(out: &'a std::io::Stdout, mpc: &'a mut Mpc) -> Window<'a> {
+  pub fn new(out: &'a std::io::Stdout, mpc: &'a mut Mpc, radios: &'a mut RadioList) -> Window<'a> {
     let mut screen = MpcScreen::new(out);
     screen.clean();
 
@@ -128,9 +131,12 @@ impl<'a> Window<'a> {
     panels.push(Box::new(getBLUE_PAGE2()));
     panels.push(Box::new(getKeyBoard()));
     panels.push(Box::new(ListItemPannel::new(mpc.navigate(), Some(Action::UpSearch(0)), Some(Action::DownSearch(0)), None, Some(Action::SelSearch(0, false)) )));
+    // radios
+    panels.push(Box::new(ListItemPannel::new(radios.get_list(), None, None, None, Some(Action::SelRadio(0)) )));
+    panels.push(Box::new(getKeyBoard()));
 
     //let red_controler = Controler::new(
-    Window {panels, screen, red: 0, green: 1, blue: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from("") }
+    Window {panels, screen, red: 0, green: 1, blue: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios }
   }
 
   pub fn stop(&mut self) {
@@ -139,24 +145,24 @@ impl<'a> Window<'a> {
 
   fn switch_window(&mut self, which: u16) {
     match which {
+      // active queue
       1 => { self.green = 1; self.blue = 2; },
+      // search
       2 => { self.green = 5; self.blue = 4; },
+      // search radio
+      3 => { self.green = 6; self.blue = 7; },
       _ => {}
     }
   }
 
   // play first song
   pub fn init(&mut self) {
-    self.mpc.random(false);
-    self.mpc.repeat(false);
-    self.mpc.single(false);
-    self.mpc.consume(false);
     self.apply(Some(Action::PlaySong(0)));
   }
 
-  // refresh current song
+  // return true if something has changed and window
+  // must be refreshed
   pub fn refreshable(&mut self) -> bool {
-
     let mut refr = false;
 
     if let Some(song) = self.mpc.current_song() {
@@ -170,16 +176,6 @@ impl<'a> Window<'a> {
     }
 
     refr
-
-    // if let Some(idx_song) = self.mpc.get_current_song() {
-    //   if (self.green==1) && (self.idx_current_song!=idx_song) {
-    //     self.panels[1].key(b'x');
-    //     self.panels[1].key(b'p');
-    //   }
-    //   if self.idx_current_song != idx_song {
-    //     self.idx_current_song = idx_song;
-    //   }
-    // }
   }
 
   pub fn key(&mut self, key: u8) {
@@ -199,6 +195,8 @@ impl<'a> Window<'a> {
   }
 
   pub fn apply(&mut self, action: Option<Action>) {
+    debug!("apply");
+    debug!("{:?}", action);
     match action {
       Some(Action::SwitchWindow(which)) => { self.switch_window(which); },
       Some(Action::PlaySong(which)) => {
@@ -230,9 +228,28 @@ impl<'a> Window<'a> {
           self.apply(Some(Action::PlaySong(0)));
         }
       },
+      Some(Action::SelRadio(which)) => {
+        debug!("selradio");
+        let station = self.radios.get_station(which);
+        let newlist = vec!( station );
+        self.panels[1].refresh(newlist, 0);
+        let url = self.radios.get_url(which);
+        let station = self.radios.get_station(which);
+        self.mpc.select_radio(station, url);
+        self.mpc.stop();
+        self.mpc.play_song(0);
+      },
       Some(Action::Search(search)) => {
-        let newlist = self.mpc.search(&search);
-        self.panels[5].refresh(newlist, 0);
+        // search in repository
+        if self.green == 5 {
+          let newlist = self.mpc.search(&search);
+          self.panels[5].refresh(newlist, 0);
+        }
+        // search in radios
+        if self.green == 6 {
+          let newlist = self.radios.search(&search);
+          self.panels[6].refresh(newlist, 0);
+        }
       }
       _ => {},
     }

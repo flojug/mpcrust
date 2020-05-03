@@ -9,12 +9,16 @@ use std::{thread, time};
 use mpcrust::window::*;
 use mpcrust::mpc::*;
 
+use mpcrust::radio::*;
+
 #[macro_use] extern crate log;
 extern crate simplelog;
 use simplelog::*;
 use std::fs::File;
 
+
 fn main() {
+
 
     CombinedLogger::init(
         vec![
@@ -25,9 +29,15 @@ fn main() {
     debug!("Lancement mpcrust ==============");
 
     let mut mpc = Mpc::new("127.0.0.1", "6600");
+    let mut radios = RadioList::new();
 
     let stdout = stdout();
-    let mut wind = Window::new(&stdout, &mut mpc);
+    // mpc.clear();
+    mpc.random(false);
+    mpc.repeat(false);
+    mpc.single(false);
+    mpc.consume(false);
+    let mut wind = Window::new(&stdout, &mut mpc, &mut radios);
     let mut currentsong = String::from("");
 
     wind.clean();
@@ -51,7 +61,6 @@ fn main() {
         }
         if (wind.refreshable()) {
             wind.draw();
-
         }
         sleep(100);
     }

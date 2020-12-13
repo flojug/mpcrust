@@ -2,6 +2,8 @@
 extern crate termion;
 
 use crate::mpcscreen::*;
+use crate::window::*;
+
 use termion::color;
 use termion::raw::*;
 
@@ -35,7 +37,7 @@ pub enum Action {
 
 pub trait Widget {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox);
-    fn key(&mut self, key: u8) -> Option<Action>;
+    fn touch(&mut self, touch: Touch) -> Option<Action>;
     fn refresh(&mut self, items: Vec<String>, idx: usize) {}
     fn set_current(&mut self, s: &String) {}
 }
@@ -52,14 +54,14 @@ pub enum ItemState {
 pub struct Button {
     item: String,
     state: ItemState,
-    key: u8,
+    touch: Touch,
     col: color::Rgb,
-    action: Option<Action>
+    action: Option<Action>,
 }
 
 impl Button {
-    pub fn new(item: &str, state: ItemState, key: u8, col: color::Rgb, action: Option<Action>) -> Button {
-        Button { item: String::from(item), state, key, col, action }
+    pub fn new(item: &str, state: ItemState, touch: Touch, col: color::Rgb, action: Option<Action>) -> Button {
+        Button { item: String::from(item), state, touch, col, action }
     }
 
     pub fn get_len(&self) -> u16 {
@@ -81,7 +83,7 @@ impl Widget for Button {
       }
     }
 
-    fn key(&mut self, key: u8) -> Option<Action> {
+    fn touch(&mut self, touch: Touch) -> Option<Action> {
         None
     }
 }
@@ -107,7 +109,7 @@ impl ListItemPannel {
     fn init_items(stritems: Vec<String>, idx: usize) -> Vec<Item> {
         let mut items = vec!();
         for stritem in stritems {
-            let item = Item {item: stritem, state: ItemState::NotSelected, key: b'p', col: color::Rgb(0,255,0), action: None };
+            let item = Item {item: stritem, state: ItemState::NotSelected, touch: Touch::TOUCH_PLAY, col: color::Rgb(0,255,0), action: None };
             items.push(item);
         }
         if items.len() > idx {
@@ -157,7 +159,7 @@ impl Widget for ListItemPannel {
         }
     }
 
-    fn key(&mut self, key: u8) -> Option<Action> {
+    fn touch(&mut self, touch: Touch) -> Option<Action> {
         let mut ret = None;
 
         // find index which button is over
@@ -173,19 +175,19 @@ impl Widget for ListItemPannel {
             idx_sel = idx;
         }
 
-        if (key == b'x') && (idx < self.items.len()-1) {  // down
+        if (touch == Touch::TOUCH_DOWN) && (idx < self.items.len()-1) {  // down
             self.items[idx].state = ItemState::NotSelected;
             self.items[idx+1].state = ItemState::Selected;
             return None;
         }
 
-        if (key == b'e') && (idx > 0) {  // up
+        if (touch == Touch::TOUCH_UP) && (idx > 0) {  // up
             self.items[idx].state = ItemState::NotSelected;
             self.items[idx-1].state = ItemState::Selected;
             return None;
         }
 
-        if (key == b's') {  // left
+        if touch == Touch::TOUCH_LEFT {  // left
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.left_action {
                     Some(Action::UpSearch(_))=> return Some(Action::UpSearch(idx)),
@@ -196,7 +198,7 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if (key == b'd') {  // right
+        if touch == Touch::TOUCH_RIGHT {  // right
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.right_action {
                     Some(Action::DownSearch(_))=> return Some(Action::DownSearch(idx)),
@@ -207,7 +209,7 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if key == b'p' {  // select
+        if touch == Touch::TOUCH_PLAY {  // select
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.select_action {
                     _=> return None
@@ -217,7 +219,7 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if key == b'a' {
+        if touch == Touch::TOUCH_OK {
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.apply_action {
                     Some(Action::PlaySong(_))=> return Some(Action::PlaySong(idx)),
@@ -249,7 +251,7 @@ pub struct Keyboard {
     second_line: Vec<Key>,
     third_line: Vec<Key>,
     search: [char; 10],
-    idx_search: usize
+    idx_search: usize,
 }
 
 impl Keyboard {
@@ -299,7 +301,7 @@ impl Widget for Keyboard {
         }
     }
 
-    fn key(&mut self, key: u8) -> Option<Action> {
+    fn touch(&mut self, touch: Touch) -> Option<Action> {
         let mut ret = None;
 
         // find postition in keyboard
@@ -327,26 +329,26 @@ impl Widget for Keyboard {
             return None;
         }
 
-        if (key == b's') && (index > 0) {  // left
+        if (touch == Touch::TOUCH_LEFT) && (index > 0) {  // left
             line[index].state = ItemState::NotSelected;
             line[index-1].state = ItemState::Selected;
         }
-        if (key == b'd') && (index+1 < line.len()) {  // right
+        if (touch == Touch::TOUCH_RIGHT) && (index+1 < line.len()) {  // right
             line[index].state = ItemState::NotSelected;
             line[index+1].state = ItemState::Selected;
         }
 
-        if (key == b'x') && (!next_line.is_none()) {  // down
+        if (touch == Touch::TOUCH_DOWN) && (!next_line.is_none()) {  // down
             line[index].state = ItemState::NotSelected;
             next_line.unwrap()[index].state = ItemState::Selected;
         }
 
-        if (key == b'e') && (!prev_line.is_none()) {  // up
+        if (touch == Touch::TOUCH_UP) && (!prev_line.is_none()) {  // up
             line[index].state = ItemState::NotSelected;
             prev_line.unwrap()[index].state = ItemState::Selected;
         }
 
-        if (key == b'a') || (key == b'p') {  // apply
+        if (touch == Touch::TOUCH_OK) || (touch == Touch::TOUCH_PLAY) {  // apply
             if let Some(key) = self.get_selected() {
                 let car = (&key[..]).chars().next().unwrap();
                 if key == String::from("CR") {
@@ -406,7 +408,7 @@ impl Widget for ButtonPannelOneLine {
         }
     }
 
-    fn key(&mut self, key: u8) -> Option<Action> {
+    fn touch(&mut self, touch: Touch) -> Option<Action> {
 
         let mut ret = None;
 
@@ -421,18 +423,18 @@ impl Widget for ButtonPannelOneLine {
             idx = idx + 1;
         }
 
-        if (key == b's') && (idx > 0) {  // left
+        if (touch == Touch::TOUCH_LEFT) && (idx > 0) {  // left
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx-1].state = ItemState::Selected;
             return None;
         }
-        if (key == b'd') && (idx < self.buttons.len()-1) {  // right
+        if (touch == Touch::TOUCH_RIGHT) && (idx < self.buttons.len()-1) {  // right
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx+1].state = ItemState::Selected;
             return None;
         }
 
-        if key == b'p' {
+        if touch == Touch::TOUCH_PLAY {
             if let Some(idx) = self.buttons.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.buttons[idx].action {
                     Some(Action::SwitchWindow(which))=> return Some(Action::SwitchWindow(which)),
@@ -449,7 +451,7 @@ impl Widget for ButtonPannelOneLine {
 
         // test if button known
         let test: Vec<&mut Button> = self.buttons.iter_mut()
-            .filter(|button| (*button).key == key).collect();
+            .filter(|button| (*button).touch == touch).collect();
 
         if test.len() == 0 {
             return None;
@@ -460,7 +462,7 @@ impl Widget for ButtonPannelOneLine {
             .for_each(|button| (*button).state = ItemState::NotSelected);
 
         self.buttons.iter_mut()
-            .filter(|button| (*button).key == key)
+            .filter(|button| (*button).touch == touch)
             .for_each(|button| (*button).state = ItemState::Selected);
 
 

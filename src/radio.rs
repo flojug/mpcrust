@@ -67,6 +67,15 @@ impl RadioList {
 
         // ici tester si le fichier yp.xml existe et si non
         // le créer en le récupérant depuis internet
+        let mut xmlf = xdg_dirs.find_data_file("yp.xml");
+        if xmlf.is_none() {
+            let mut resp = reqwest::blocking::get("http://dir.xiph.org/yp.xml").unwrap();
+            //let text = resp.text().unwrap();
+            let radios_xml = xdg_dirs.place_data_file("yp.xml").unwrap();
+            let mut f = File::create(radios_xml).unwrap();
+            resp.copy_to(&mut f);
+            pop = true;
+        }
 
         // populate or refresh database
         if pop {

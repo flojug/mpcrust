@@ -42,3 +42,12 @@ Afficher un clavier
 
 
     // http://dir.xiph.org/yp.xml
+
+
+http://www.youtube.com/watch_videos?video_ids=Iybzt61mMRk,9j_nubpvg7Y,8QyzInh-rJ8,bc2Rsd7n7JM,2ICFtXx546A,uUpPS7KBhsQ,PggLccRN6Ds,uBwoZKUmDUI,SbyAZQ45uww,zHziNP8skLM,LfmguyDRBwU,Kgi8bkcMmiI,YyfPiKoypxQ,wR2nyVgVjXs,_J3zXHE6brY,XMqzcwYv350,7cv9NIzGmSI,KdOtLc98eo0,Saj0eaPN04o,0i7IiS0rS_g,C9iIs0isA-g,6yMKhTiyejc,NtifnHIrPQg,1BCHfCVw2Po,ZRur9D354W0,7sXLyZLPlps,QF7rCv6ch7M,RKKFGedanjU,v5UfN7tQK7U,7CVk4rcDXjQ,dcVcwwo8QFE,j-hg4sPMYK0,zeFn2W4oAdU,BAPh04Ay_0Q,CCfW_V2sH8I,WENXocZJChs,kZBcu3INKpE
+
+
+telnet ice2.ikoula.net-radio.fr 80
+GET frequence3.flac HTTP1/1
+Hostname: ice2.ikoula.net-radio.fr
+

@@ -39,19 +39,19 @@ Installer Raspbian
 Raspberry Pi OS (32-bit) Lite
 
 Configuration de l'écran
-  vi /etc/default/console-setup
-  FONTFACE="Terminus"
-  FONTSIZE="16x32"
-  etc/init.d/console-setup.sh restart
+    vi /etc/default/console-setup
+    FONTFACE="Terminus"
+    FONTSIZE="16x32"
+    etc/init.d/console-setup.sh restart
 
 Terminal 50x15
-  vi /boot/config.txt
-  lcd_rotate=2
+    vi /boot/config.txt
+    lcd_rotate=2
 
 Touches
 ==============
 
-  .local/share/mpcrust/keys.json
+    .local/share/mpcrust/keys.json
 
 
 splash
@@ -59,11 +59,11 @@ splash
 
 ## fbset
 
-mode "800x480"
-    geometry 800 480 800 480 32
-    timings 0 0 0 0 0 0 0
-    rgba 8/16,8/8,8/0,8/24
-endmode
+    mode "800x480"
+      geometry 800 480 800 480 32
+      timings 0 0 0 0 0 0 0
+      rgba 8/16,8/8,8/0,8/24
+    endmode
 
 https://yingtongli.me/blog/2016/12/21/splash.html
 
@@ -80,104 +80,104 @@ Enlever couleurs écran
 dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=27515498-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait logo.nologo consoleblank=0 loglevel=1 quiet  vt.default_red=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_grn=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_blu=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 
-echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
+    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
+    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
+    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
 
-[Unit]
-Description=Restore system coloes
-Before=getty@tty1.service
+    [Unit]
+    Description=Restore system coloes
+    Before=getty@tty1.service
 
-[Service]
-Type=oneshot
-ExecStart=/home/pi/restore-colors
+    [Service]
+    Type=oneshot
+    ExecStart=/home/pi/restore-colors
 
-[Install]
-WantedBy=getty.target
+    [Install]
+    WantedBy=getty.target
 
 
-cat > /home/pi/restore-colors
-echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
-FIN NON
+    cat > /home/pi/restore-colors
+    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
+    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
+    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
+    FIN NON
 
 
 bluetooth
 ==============
-/boot/config
-dtoverlay=disable-bt
+    /boot/config
+    dtoverlay=disable-bt
 
-sudo systemctl disable hciuart.service
-sudo systemctl disable bluealsa.service
-sudo systemctl disable bluetooth.service
+    sudo systemctl disable hciuart.service
+    sudo systemctl disable bluealsa.service
+    sudo systemctl disable bluetooth.service
 
-sudo apt-get purge bluez -y
-sudo apt-get autoremove -y
+    sudo apt-get purge bluez -y
+    sudo apt-get autoremove -y
 
 
 
 
 wifi
 ==============
-echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
+    echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 
 
 Configuration IR
 ==============
 
-  vi /boot/config.txt
-  dtoverlay=gpio-ir
+    vi /boot/config.txt
+    dtoverlay=gpio-ir
 
 
-  apt install ir-keytable
+    apt install ir-keytable
 
 Connaître le /dev/sys utilisé
-  ir-keytable
+    ir-keytable
 
 Initialiser un protocole
 
-  cat /sys/class/rc/rc0/protocols
-  echo nec > /sys/class/rc/rc0/protocols
+    cat /sys/class/rc/rc0/protocols
+    echo nec > /sys/class/rc/rc0/protocols
 
-  ir-keytable -p <protocole>
-  ir-keytable -t
+    ir-keytable -p <protocole>
+    ir-keytable -t
 
 Générer le fichier /etc/rc_keymaps/one_for_all.toml
 
 Ajouter dans /etc/rc.local
-  ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
+    ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
 
-  apt install inputlirc lirc
+    apt install inputlirc lirc
 
-  cat /etc/default/inputlirc
+    cat /etc/default/inputlirc
 
-  # Options to be passed to inputlirc.
-  EVENTS="/dev/input/event0"
-  OPTIONS="-g -m 0 -c"
-  # EVENTS="/dev/input/event*"
-  # OPTIONS=
+    # Options to be passed to inputlirc.
+    EVENTS="/dev/input/event0"
+    OPTIONS="-g -m 0 -c"
+    # EVENTS="/dev/input/event*"
+    # OPTIONS=
 
 Il faut désactiver lircd (?? à voir)
 
 Associer les touches à des événements claviers
-  # cat lircrc
-  begin
-       prog = irexec
-       button = KEY_POWER
-       config = /home/pi/atou.sh "a"
-  end
-  begin
-       prog = irexec
-       button = KEY_POWER2
-       config = /home/pi/atou.sh "b"
-  end
-  begin
-       prog = irexec
-       button = KEY_TV_AV
-       config = /home/pi/atou.sh "c"
-  end
-  ...
+    # cat lircrc
+    begin
+         prog = irexec
+         button = KEY_POWER
+         config = /home/pi/atou.sh "a"
+    end
+    begin
+         prog = irexec
+         button = KEY_POWER2
+         config = /home/pi/atou.sh "b"
+    end
+    begin
+         prog = irexec
+         button = KEY_TV_AV
+         config = /home/pi/atou.sh "c"
+    end
+    ...
 
 
 tui-rs + termion

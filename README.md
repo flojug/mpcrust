@@ -53,7 +53,7 @@ Touches
 .local/share/mpcrust/keys.json
 
 
-spash
+splash
 ==============
 
 # fbset

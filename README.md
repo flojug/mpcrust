@@ -39,24 +39,25 @@ Installer Raspbian
 Raspberry Pi OS (32-bit) Lite
 
 Configuration de l'écran
-# vi /etc/default/console-setup
-FONTFACE="Terminus"
-FONTSIZE="16x32"
-# etc/init.d/console-setup.sh restart
-Terminal 50x15
+  vi /etc/default/console-setup
+  FONTFACE="Terminus"
+  FONTSIZE="16x32"
+  etc/init.d/console-setup.sh restart
 
-/boot/config.txt
-lcd_rotate=2
+Terminal 50x15
+  vi /boot/config.txt
+  lcd_rotate=2
 
 Touches
 ==============
-.local/share/mpcrust/keys.json
+
+  .local/share/mpcrust/keys.json
 
 
 splash
 ==============
 
-# fbset
+## fbset
 
 mode "800x480"
     geometry 800 480 800 480 32
@@ -125,57 +126,58 @@ echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 Configuration IR
 ==============
 
-/boot/config.txt
-dtoverlay=gpio-ir
+  vi /boot/config.txt
+  dtoverlay=gpio-ir
 
 
-apt install ir-keytable
+  apt install ir-keytable
 
 Connaître le /dev/sys utilisé
-ir-keytable
+  ir-keytable
 
 Initialiser un protocole
 
-cat /sys/class/rc/rc0/protocols
-echo nec > /sys/class/rc/rc0/protocols
+  cat /sys/class/rc/rc0/protocols
+  echo nec > /sys/class/rc/rc0/protocols
 
-ir-keytable -p <protocole>
-ir-keytable -t
+  ir-keytable -p <protocole>
+  ir-keytable -t
 
 Générer le fichier /etc/rc_keymaps/one_for_all.toml
 
 Ajouter dans /etc/rc.local
-ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
+  ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
 
-apt install inputlirc lirc
+  apt install inputlirc lirc
 
-cat /etc/default/inputlirc
-# Options to be passed to inputlirc.
-EVENTS="/dev/input/event0"
-OPTIONS="-g -m 0 -c"
-# EVENTS="/dev/input/event*"
-# OPTIONS=
+  cat /etc/default/inputlirc
+
+  # Options to be passed to inputlirc.
+  EVENTS="/dev/input/event0"
+  OPTIONS="-g -m 0 -c"
+  # EVENTS="/dev/input/event*"
+  # OPTIONS=
 
 Il faut désactiver lircd (?? à voir)
 
 Associer les touches à des événements claviers
-# cat lircrc
-begin
-     prog = irexec
-     button = KEY_POWER
-     config = /home/pi/atou.sh "a"
-end
-begin
-     prog = irexec
-     button = KEY_POWER2
-     config = /home/pi/atou.sh "b"
-end
-begin
-     prog = irexec
-     button = KEY_TV_AV
-     config = /home/pi/atou.sh "c"
-end
-...
+  # cat lircrc
+  begin
+       prog = irexec
+       button = KEY_POWER
+       config = /home/pi/atou.sh "a"
+  end
+  begin
+       prog = irexec
+       button = KEY_POWER2
+       config = /home/pi/atou.sh "b"
+  end
+  begin
+       prog = irexec
+       button = KEY_TV_AV
+       config = /home/pi/atou.sh "c"
+  end
+  ...
 
 
 tui-rs + termion
@@ -183,7 +185,7 @@ crate mpd
 mappage boutons IRC
 
 Monter la partition de musique
-mount /dev/sda1 /var/lib/mpd/music
+  mount /dev/sda1 /var/lib/mpd/music
 
 
 Utilisation

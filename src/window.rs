@@ -95,55 +95,55 @@ fn getBUTTONS_2() -> Vec<Button> {
 
 fn getBUTTONS_3() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-PLAY", ItemState::Selected, Touch::TOUCH_1, color::Rgb(0,0,255), Some(Action::Play)));
-    v.push(Button::new("2-STOP", ItemState::NotSelected, Touch::TOUCH_2, color::Rgb(0,0,255), Some(Action::Stop)));
-    v.push(Button::new("3-PAUSE", ItemState::NotSelected, Touch::TOUCH_3, color::Rgb(0,0,255), Some(Action::Pause)));
-    v.push(Button::new("4-NEXT", ItemState::NotSelected, Touch::TOUCH_4, color::Rgb(0,0,255), None));
-    v.push(Button::new("5-PREV", ItemState::NotSelected, Touch::TOUCH_5, color::Rgb(0,0,255), None));
+    v.push(Button::new("1-PLAY", ItemState::Selected, Touch::TOUCH_1, color::Rgb(255,255,0), Some(Action::Play)));
+    v.push(Button::new("2-STOP", ItemState::NotSelected, Touch::TOUCH_2, color::Rgb(255,255,0), Some(Action::Stop)));
+    v.push(Button::new("3-PAUSE", ItemState::NotSelected, Touch::TOUCH_3, color::Rgb(255,255,0), Some(Action::Pause)));
+    v.push(Button::new("4-NEXT", ItemState::NotSelected, Touch::TOUCH_4, color::Rgb(255,255,0), None));
+    v.push(Button::new("5-PREV", ItemState::NotSelected, Touch::TOUCH_5, color::Rgb(255,255,0), None));
     v
 }
 
 fn getBUTTONS_4() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-SEARCH", ItemState::Selected, Touch::TOUCH_1, color::Rgb(0,0,255), None));
+    v.push(Button::new("1-SEARCH", ItemState::Selected, Touch::TOUCH_1, color::Rgb(255,255,0), None));
     v
 }
 
 
 fn getKeyBoard() -> Keyboard {
     let mut l1 = Vec::new();
-    l1.push(Button::new("A", ItemState::Selected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("Z", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("E", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("R", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("T", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("Y", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("U", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("I", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("O", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l1.push(Button::new("P", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
+    l1.push(Button::new("A", ItemState::Selected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("Z", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("E", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("R", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("T", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("Y", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("U", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("I", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("O", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l1.push(Button::new("P", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
     let mut l2 = Vec::new();
-    l2.push(Button::new("Q", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("S", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("D", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("F", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("G", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("H", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("J", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("K", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("L", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l2.push(Button::new("M", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
+    l2.push(Button::new("Q", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("S", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("D", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("F", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("G", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("H", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("J", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("K", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("L", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l2.push(Button::new("M", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
     let mut l3 = Vec::new();
-    l3.push(Button::new("W", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("X", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("C", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("V", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("B", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("N", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("_", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("<", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("*", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
-    l3.push(Button::new("CR", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(0,0,255), None));
+    l3.push(Button::new("W", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("X", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("C", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("V", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("B", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("N", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("_", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("<", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("*", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
+    l3.push(Button::new("CR", ItemState::NotSelected, Touch::TOUCH_NONE, color::Rgb(255,255,0), None));
     Keyboard::new(l1, l2, l3)
 }
 
@@ -152,14 +152,14 @@ fn getRED_MENU() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_1(
 
 fn getGREEN_PAGE_1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_2()) }
 
-fn getBLUE_PAGE2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_4()) }
-fn getBLUE_PAGE1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_3()) }
+fn getYELLOW_PAGE2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_4()) }
+fn getYELLOW_PAGE1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(getBUTTONS_3()) }
 
 
 pub enum SubWindow {
   Red,
   Green,
-  Blue
+  Yellow
 }
 
 
@@ -168,7 +168,7 @@ pub struct Window<'a>{
   screen: MpcScreen<'a>,
   red: usize,
   green: usize,
-  blue: usize,
+  yellow: usize,
   current_color: SubWindow,
   mpc: &'a mut Mpc,
   idx_current_song: usize,
@@ -185,8 +185,8 @@ impl<'a> Window<'a> {
     let mut panels: Vec<Box<Widget>> = Vec::new();
     panels.push(Box::new(getRED_MENU()));
     panels.push(Box::new(ListItemPannel::new(mpc.get_songs(), Some(Action::PlaySong(0)), None, None, Some(Action::PlaySong(0)))));
-    panels.push(Box::new(getBLUE_PAGE1()));
-    panels.push(Box::new(getBLUE_PAGE2()));
+    panels.push(Box::new(getYELLOW_PAGE1()));
+    panels.push(Box::new(getYELLOW_PAGE2()));
     panels.push(Box::new(getKeyBoard()));
     panels.push(Box::new(ListItemPannel::new(mpc.navigate(), Some(Action::UpSearch(0)), Some(Action::DownSearch(0)), None, Some(Action::SelSearch(0, false)))));
     // radios
@@ -194,7 +194,7 @@ impl<'a> Window<'a> {
     panels.push(Box::new(getKeyBoard()));
 
     //let red_controler = Controler::new(
-    Window {panels, screen, red: 0, green: 1, blue: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios }
+    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios }
   }
 
   pub fn stop(&mut self) {
@@ -204,11 +204,11 @@ impl<'a> Window<'a> {
   fn switch_window(&mut self, which: u16) {
     match which {
       // active queue
-      1 => { self.green = 1; self.blue = 2; },
+      1 => { self.green = 1; self.yellow = 2; },
       // search
-      2 => { self.green = 5; self.blue = 4; },
+      2 => { self.green = 5; self.yellow = 4; },
       // search radio
-      3 => { self.green = 6; self.blue = 7; },
+      3 => { self.green = 6; self.yellow = 7; },
       _ => {}
     }
   }
@@ -242,12 +242,12 @@ impl<'a> Window<'a> {
     match  touch {
       Touch::TOUCH_RED => { self.current_color = SubWindow::Red; return; },
       Touch::TOUCH_GREEN => { self.current_color = SubWindow::Green; return; },
-      Touch::TOUCH_BLUE => { self.current_color = SubWindow::Blue; return; },
+      Touch::TOUCH_YELLOW => { self.current_color = SubWindow::Yellow; return; },
       _ => {
         let action = match self.current_color {
           SubWindow::Red => self.panels[self.red].touch(touch),
           SubWindow::Green => self.panels[self.green].touch(touch),
-          SubWindow::Blue => self.panels[self.blue].touch(touch)
+          SubWindow::Yellow => self.panels[self.yellow].touch(touch)
         };
         self.apply(action);
       }
@@ -320,7 +320,7 @@ impl<'a> Window<'a> {
     match color {
       SubWindow::Red => self.red = which_panel,
       SubWindow::Green => self.green = which_panel,
-      SubWindow::Blue => self.blue = which_panel,
+      SubWindow::Yellow => self.yellow = which_panel,
     }
     self.draw();
   }
@@ -345,7 +345,7 @@ impl<'a> Window<'a> {
     for i in 13..16 {
       self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
     }
-    self.panels[self.blue].draw(&mut self.screen, scbox);
+    self.panels[self.yellow].draw(&mut self.screen, scbox);
 
     self.flush();
   }

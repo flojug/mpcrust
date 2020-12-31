@@ -113,7 +113,7 @@ impl RadioList {
     // just once upon a week not to stress the server
     pub fn _popuplate(xdg_dirs: &xdg::BaseDirectories, conn: &rusqlite::Connection) {
 
-        let mut radios_xml = xdg_dirs.find_data_file("yp.xml").expect("Fichier xml non trouvé.");
+        let mut radios_xml = xdg_dirs.find_data_file("yp.xml").expect("XML file not found.");
         let contents = fs::read_to_string(radios_xml.to_str().unwrap()).expect("Can't open radio file.");
 
         let directory: Directory = serde_xml_rs::deserialize(contents.as_bytes()).unwrap();

@@ -14,6 +14,8 @@ use mpcrust::window::*;
 use mpcrust::mpc::*;
 use mpcrust::radio::*;
 
+use std::collections::BTreeMap;
+
 #[macro_use] extern crate log;
 extern crate simplelog;
 use simplelog::*;
@@ -23,15 +25,35 @@ extern crate xdg;
 
 fn main() {
 
-    CombinedLogger::init(
-        vec![
-            WriteLogger::new(LevelFilter::Debug, Config::default(), File::create("/tmp/mpcrust.log").unwrap()),
-        ]
-    ).unwrap();
+    let xdg_dirs = xdg::BaseDirectories::with_prefix("mpcrust").unwrap();
+    let str_config = match xdg_dirs.find_config_file("mpcrust.ini") {
+        Some(path) => {
+            match fs::read_to_string(path) {
+                Ok(dummy) => dummy,
+                Err(_) => {
+                    panic!("Unable to read keys.json file.");
+                }
+            }
+        },
+        None => String::from("---\nserver: 127.0.0.1\nport: 6600\ndebug: true\ndebug_file: /tmp/mpcrust.log\n")
+    };
+
+    let config: BTreeMap<String, String> = serde_yaml::from_str(&str_config).unwrap();
+
+    if config.get("debug").unwrap_or(&String::from("true")) == "true" {
+        let def_log_file = String::from("/tmp/mpcrust.log");
+        let log_file = config.get("debug_file").unwrap_or(&def_log_file);
+        CombinedLogger::init(
+            vec![
+                WriteLogger::new(LevelFilter::Debug, Config::default(), File::create(log_file).unwrap()),
+            ]
+        ).unwrap();
+    }
 
     debug!("Launch mpcrust ==============");
+    debug!("config : {:?}", config);
 
-    let mut mpc = Mpc::new("127.0.0.1", "6600");
+    let mut mpc = Mpc::new(config.get("server").unwrap_or(&String::from("127.0.0.1")), config.get("port").unwrap_or(&String::from("6600")));
     let mut radios = RadioList::new();
 
     let stdout = stdout();
@@ -41,8 +63,10 @@ fn main() {
     mpc.single(false);
     mpc.consume(false);
 
-    // try to read config of keys from xdg keys.json file in data dir
-    let xdg_dirs = xdg::BaseDirectories::with_prefix("mpcrust").unwrap();
+    // try to read config of keys from xdg keys.json file in data dir.
+    // Example :
+    // $ cat ~/.local/share/mpcrust/keys.json
+    // [66, 65, 64, 67, 38, 169, 34, 39, 40, 45, 168, 95, 97, 160, 44, 110, 114, 103, 121, 98]
     let touchs: [u8; 20] = match xdg_dirs.find_data_file("keys.json") {
         Some(keyspath) => {
             // if File::open(keyspath).is_err() {
@@ -61,7 +85,29 @@ fn main() {
                 }
             }
         },
-        None => [65, 66, 68, 67, 38, 169, 34, 39, 40, 45, 168, 95, 97, 160, 44, 110, 114, 103, 121, 98]
+        // default keys for my configuration
+        None => [
+            56, // 65, // TOUCH_UP,
+            50, //66, // TOUCH_DOWN,
+            52, //68, // TOUCH_LEFT,
+            54, //67, // TOUCH_RIGHT,
+            49, //38, // TOUCH_1,
+            50, //169, // TOUCH_2,
+            51, //34, // TOUCH_3,
+            52, //39, // TOUCH_4,
+            53, //40, // TOUCH_5,
+            54, //45, // TOUCH_6,
+            55, //168, // TOUCH_7,
+            56, //95, // TOUCH_8,
+            57, //97, // TOUCH_9,
+            48, //160, // TOUCH_0,
+            43, //44, // TOUCH_PLAY,
+            13, //110, // TOUCH_OK,
+            114, // TOUCH_RED,
+            103, // TOUCH_GREEN,
+            121, // TOUCH_YELLOW,
+            98, // TOUCH_BLUE,
+            ]
     };
 
     let mut wind = Window::new(&stdout, &mut mpc, &mut radios);
@@ -81,6 +127,7 @@ fn main() {
             //     return;
             // },
             Ok(value8) => {
+                debug!("{:?}", value8);
                 let touch = touchst.getValue(value8);
                 wind.touch(touch);
                 wind.draw();
@@ -97,12 +144,14 @@ fn main() {
 
 fn spawn_stdin_channel() -> Receiver<u8> {
     let (tx, rx) = mpsc::channel::<u8>();
-    thread::spawn(move || loop {
+    thread::spawn(move || {
         let stdin = stdin();
         let stdin = stdin.lock();
         let mut bytes = stdin.bytes();
-        let b = bytes.next().unwrap().unwrap();
-        tx.send(b).unwrap();
+        loop {
+            let b = bytes.next().unwrap().unwrap();
+            tx.send(b).unwrap();
+        }
     });
     rx
 }

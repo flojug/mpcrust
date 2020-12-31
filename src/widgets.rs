@@ -5,9 +5,6 @@ use crate::mpcscreen::*;
 use crate::window::*;
 
 use termion::color;
-use termion::raw::*;
-
-use std::cmp;
 
 #[derive(Clone)]
 #[derive(Debug)]
@@ -38,8 +35,8 @@ pub enum Action {
 pub trait Widget {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox);
     fn touch(&mut self, touch: Touch) -> Option<Action>;
-    fn refresh(&mut self, items: Vec<String>, idx: usize) {}
-    fn set_current(&mut self, s: &String) {}
+    fn refresh(&mut self, _items: Vec<String>, _idx: usize) {}
+    fn set_current(&mut self, _s: &String) {}
 }
 
 #[derive(Debug)]
@@ -83,7 +80,7 @@ impl Widget for Button {
       }
     }
 
-    fn touch(&mut self, touch: Touch) -> Option<Action> {
+    fn touch(&mut self, _touch: Touch) -> Option<Action> {
         None
     }
 }
@@ -109,7 +106,7 @@ impl ListItemPannel {
     fn init_items(stritems: Vec<String>, idx: usize) -> Vec<Item> {
         let mut items = vec!();
         for stritem in stritems {
-            let item = Item {item: stritem, state: ItemState::NotSelected, touch: Touch::TOUCH_PLAY, col: color::Rgb(0,255,0), action: None };
+            let item = Item {item: stritem, state: ItemState::NotSelected, touch: Touch::TouchPlay, col: color::Rgb(0,255,0), action: None };
             items.push(item);
         }
         if items.len() > idx {
@@ -160,34 +157,31 @@ impl Widget for ListItemPannel {
     }
 
     fn touch(&mut self, touch: Touch) -> Option<Action> {
-        let mut ret = None;
+        let ret = None;
 
         // find index which button is over
         // per default it is the selected
         let mut idx: usize = 0;
-        let mut idx_sel: usize = 0;
-        idx = 0;
         for button in &self.items {
             if (*button).state == ItemState::Selected {
                 break;
             }
             idx = idx + 1;
-            idx_sel = idx;
         }
 
-        if (touch == Touch::TOUCH_DOWN) && (idx < self.items.len()-1) {  // down
+        if (touch == Touch::TouchDown) && (idx < self.items.len()-1) {  // down
             self.items[idx].state = ItemState::NotSelected;
             self.items[idx+1].state = ItemState::Selected;
             return None;
         }
 
-        if (touch == Touch::TOUCH_UP) && (idx > 0) {  // up
+        if (touch == Touch::TouchUp) && (idx > 0) {  // up
             self.items[idx].state = ItemState::NotSelected;
             self.items[idx-1].state = ItemState::Selected;
             return None;
         }
 
-        if touch == Touch::TOUCH_LEFT {  // left
+        if touch == Touch::TouchLeft {  // left
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.left_action {
                     Some(Action::UpSearch(_))=> return Some(Action::UpSearch(idx)),
@@ -198,7 +192,7 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if touch == Touch::TOUCH_RIGHT {  // right
+        if touch == Touch::TouchRight {  // right
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.right_action {
                     Some(Action::DownSearch(_))=> return Some(Action::DownSearch(idx)),
@@ -209,8 +203,8 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if touch == Touch::TOUCH_PLAY {  // select
-            if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
+        if touch == Touch::TouchPlay {  // select
+            if let Some(_idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.select_action {
                     _=> return None
                 }
@@ -219,7 +213,7 @@ impl Widget for ListItemPannel {
             }
         }
 
-        if touch == Touch::TOUCH_OK {
+        if touch == Touch::TouchOk {
             if let Some(idx) = self.items.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.apply_action {
                     Some(Action::PlaySong(_))=> return Some(Action::PlaySong(idx)),
@@ -296,19 +290,19 @@ impl Widget for Keyboard {
         draw_line(&mut self.third_line, 2);
 
         for i in 0..self.search.len() {
-            let idx = (i as u16);// * 2;
+            let idx = i as u16;// * 2;
             sc.line(scbox.x+30+idx, scbox.y+1, &self.search[i].to_string(), color::Rgb(255,255,255));
         }
     }
 
     fn touch(&mut self, touch: Touch) -> Option<Action> {
-        let mut ret = None;
+        let ret = None;
 
         // find postition in keyboard
-        let mut line;
-        let mut next_line;
-        let mut prev_line;
-        let mut index = 0;
+        let line;
+        let next_line;
+        let prev_line;
+        let index;
 
         if let Some(idx) = self.first_line.iter().position(|item| (*item).state == ItemState::Selected) {
             index = idx;
@@ -329,26 +323,26 @@ impl Widget for Keyboard {
             return None;
         }
 
-        if (touch == Touch::TOUCH_LEFT) && (index > 0) {  // left
+        if (touch == Touch::TouchLeft) && (index > 0) {  // left
             line[index].state = ItemState::NotSelected;
             line[index-1].state = ItemState::Selected;
         }
-        if (touch == Touch::TOUCH_RIGHT) && (index+1 < line.len()) {  // right
+        if (touch == Touch::TouchRight) && (index+1 < line.len()) {  // right
             line[index].state = ItemState::NotSelected;
             line[index+1].state = ItemState::Selected;
         }
 
-        if (touch == Touch::TOUCH_DOWN) && (!next_line.is_none()) {  // down
+        if (touch == Touch::TouchDown) && (!next_line.is_none()) {  // down
             line[index].state = ItemState::NotSelected;
             next_line.unwrap()[index].state = ItemState::Selected;
         }
 
-        if (touch == Touch::TOUCH_UP) && (!prev_line.is_none()) {  // up
+        if (touch == Touch::TouchUp) && (!prev_line.is_none()) {  // up
             line[index].state = ItemState::NotSelected;
             prev_line.unwrap()[index].state = ItemState::Selected;
         }
 
-        if (touch == Touch::TOUCH_OK) || (touch == Touch::TOUCH_PLAY) {  // apply
+        if (touch == Touch::TouchOk) || (touch == Touch::TouchPlay) {  // apply
             if let Some(key) = self.get_selected() {
                 let car = (&key[..]).chars().next().unwrap();
                 if key == String::from("CR") {
@@ -415,7 +409,6 @@ impl Widget for ButtonPannelOneLine {
         // find index which button is over
         // per default it is the selected
         let mut idx: usize = 0;
-        idx = 0;
         for button in &self.buttons {
             if (*button).state == ItemState::Selected {
                 break;
@@ -423,18 +416,18 @@ impl Widget for ButtonPannelOneLine {
             idx = idx + 1;
         }
 
-        if (touch == Touch::TOUCH_LEFT) && (idx > 0) {  // left
+        if (touch == Touch::TouchLeft) && (idx > 0) {  // left
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx-1].state = ItemState::Selected;
             return None;
         }
-        if (touch == Touch::TOUCH_RIGHT) && (idx < self.buttons.len()-1) {  // right
+        if (touch == Touch::TouchRight) && (idx < self.buttons.len()-1) {  // right
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx+1].state = ItemState::Selected;
             return None;
         }
 
-        if touch == Touch::TOUCH_PLAY {
+        if touch == Touch::TouchPlay {
             if let Some(idx) = self.buttons.iter().position(|item| (*item).state == ItemState::Selected) {
                 match self.buttons[idx].action {
                     Some(Action::SwitchWindow(which))=> return Some(Action::SwitchWindow(which)),
@@ -443,7 +436,6 @@ impl Widget for ButtonPannelOneLine {
                     Some(Action::Pause) => return Some(Action::Pause),
                     _=> return None
                 }
-                return self.buttons[idx].action;
             } else {
                 return None;
             }

@@ -2,10 +2,6 @@ extern crate mpd;
 
 use mpd::Client;
 use mpd::Query;
-use mpd::search::Term;
-use std::net::TcpStream;
-use std::borrow::Cow;
-use std::cmp;
 
 use indextree::Arena;
 
@@ -38,7 +34,7 @@ pub struct Mpc {
 impl Mpc {
     pub fn new(host: &str, port: &str) -> Mpc {
         let connstr = format!("{}:{}", host, port);
-        let mut conn = Client::connect(connstr).unwrap();
+        let conn = Client::connect(connstr).unwrap();
 
         let li = Mpc::init_list();
         let shost = String::from(host);
@@ -49,8 +45,7 @@ impl Mpc {
     fn test_connect(&mut self) {
         if self.conn.status().is_err() {
             let connstr = format!("{}:{}", &self.host, &self.port);
-            let mut conn = Client::connect(connstr).unwrap();
-            self.conn = conn;
+            self.conn = Client::connect(connstr).unwrap();
         }
     }
 
@@ -70,7 +65,7 @@ impl Mpc {
             return root_id;
         }
         let next_rep = &hierarchy[index];
-        let mut iter = root_id.children(&self.list);
+        let iter = root_id.children(&self.list);
         for node_id in iter {
             let node = &self.list[node_id];
             if node.get().name == *next_rep {
@@ -102,9 +97,9 @@ impl Mpc {
         songs.iter().map(|s| {
             let title = s.name.clone().unwrap_or(s.title.clone().unwrap_or(s.file.clone()));
             //let title = if s.title.is_some() {s.title.clone().unwrap()} else {s.file.clone()};
-            let mut artist = String::from("");
+            let mut _artist = String::from("");
             if s.tags.contains_key("Artist") {
-                artist = s.tags["Artist"].clone();
+                _artist = s.tags["Artist"].clone();
             }
             format!("{}", title)
         }).collect()
@@ -130,37 +125,37 @@ impl Mpc {
 
     pub fn stop(&mut self) {
         self.test_connect();
-        self.conn.stop();
+        self.conn.stop().unwrap();
     }
 
     pub fn play(&mut self) {
         self.test_connect();
-        self.conn.play();
+        self.conn.play().unwrap();
     }
 
     pub fn clear(&mut self) {
         self.test_connect();
-        self.conn.clear();
+        self.conn.clear().unwrap();
     }
 
     pub fn random(&mut self, value: bool) {
         self.test_connect();
-        self.conn.random(value);
+        self.conn.random(value).unwrap();
     }
 
     pub fn consume(&mut self, value: bool) {
         self.test_connect();
-        self.conn.consume(value);
+        self.conn.consume(value).unwrap();
     }
 
     pub fn repeat(&mut self, value: bool) {
         self.test_connect();
-        self.conn.repeat(value);
+        self.conn.repeat(value).unwrap();
     }
 
     pub fn single(&mut self, value: bool) {
         self.test_connect();
-        self.conn.single(value);
+        self.conn.single(value).unwrap();
     }
 
     pub fn down(&mut self, idx: usize) -> Vec<String> {
@@ -180,39 +175,39 @@ impl Mpc {
     // select files in search tree
     pub fn select(&mut self, idx: usize) {
         self.test_connect();
-        self.conn.clear();
+        self.conn.clear().unwrap();
         let mut iter = self.root_search.children(&self.list);
         // find selected node
         if let Some(node_id) = iter.nth(idx) {
             let node = &self.list[node_id];
             // test if leaf : no
             if node.get().song.is_none() {
-                let mut iter_2 = node_id.traverse(&self.list);
+                let iter_2 = node_id.traverse(&self.list);
                 for node_edge in iter_2 {
-                    if let(indextree::NodeEdge::Start(node_id)) = node_edge {
+                    if let indextree::NodeEdge::Start(node_id) = node_edge {
                        let node_2 = &self.list[node_id];
                        if node_2.get().song.is_some() {
-                            self.conn.push(node_2.get().song.clone().unwrap());
+                            self.conn.push(node_2.get().song.clone().unwrap()).unwrap();
                         }
                     }
                 } // leaf : yes
             } else {
-                let mut s = node.get().song.clone().unwrap();
+                let s = node.get().song.clone().unwrap();
                 //s.file = String::from("http://uk3.internet-radio.com:8060/;stream");
                 //s.file = String::from("http://dir.xiph.org/listen/150203/listen.m3u");
                 //s.file = String::from("http://178.33.232.106:8046/autodj");
-                self.conn.push(s);
+                self.conn.push(s).unwrap();
             }
         }
     }
 
     pub fn select_radio(&mut self, station: String, url: String) {
         self.test_connect();
-        self.conn.clear();
+        self.conn.clear().unwrap();
         let mut song = mpd::Song::default();
         song.file = url;
         song.title = Some(station);
-        self.conn.push(song);
+        self.conn.push(song).unwrap();
     }
 
     pub fn up(&mut self, idx: usize) -> Vec<String> {
@@ -248,13 +243,13 @@ impl Mpc {
         let songs = self.conn.search(&quer, None).unwrap();
         let mut maxd = 0;
         for s in songs.iter() {
-            let mut split = s.file.split("/");
+            let split = s.file.split("/");
             let mut reps = split.collect::<Vec<&str>>();
             maxd = std::cmp::max(maxd, reps.len());
             reps.pop();
             self.add_song(&reps, s.clone());
         }
-        for i in 0..maxd {
+        for _ in 0..maxd {
             self.selected.push(0);
         }
     }
@@ -272,7 +267,7 @@ impl Mpc {
         self.populate_list(sest);
 
         let mut ret = vec!();
-        let mut iter = self.root_search.children(&self.list);
+        let iter = self.root_search.children(&self.list);
         for node_id in iter {
             let node = &self.list[node_id];
             ret.push(node.get().name.clone());
@@ -286,7 +281,7 @@ impl Mpc {
             self.populate_list("");
         }
         let mut ret = vec!();
-        let mut iter = self.root_search.children(&self.list);
+        let iter = self.root_search.children(&self.list);
         for node_id in iter {
             let node = &self.list[node_id];
             ret.push(node.get().name.clone());
@@ -305,8 +300,8 @@ impl Mpc {
     pub fn play_song(&mut self, which: u32) {
         self.test_connect();
         // self.conn.stop();
-        self.conn.switch(which);
-        self.conn.play();
+        self.conn.switch(which).unwrap();
+        self.conn.play().unwrap();
     }
 }
 

@@ -1,18 +1,12 @@
-use std::net::TcpStream;
-use std::borrow::Cow;
-use std::cmp;
-
-use indextree::Arena;
 
 extern crate rusqlite;
-use rusqlite::{params, named_params, Result};
+use rusqlite::{params, named_params};
 use rusqlite::NO_PARAMS;
 
 extern crate xdg;
 
 use std::fs;
 use std::fs::File;
-use std::path::PathBuf;
 
 use serde_xml_rs;
 
@@ -54,7 +48,7 @@ impl RadioList {
         let mut pop = false;
 
         let xdg_dirs = xdg::BaseDirectories::with_prefix("mpcrust").unwrap();
-        let mut db = xdg_dirs.find_data_file("radios.sqlite");
+        let db = xdg_dirs.find_data_file("radios.sqlite");
 
         let radios_db = xdg_dirs.place_data_file("radios.sqlite").expect("Cannot create configuration directory");
         let conn = rusqlite::Connection::open(radios_db).unwrap();
@@ -67,13 +61,13 @@ impl RadioList {
 
         // ici tester si le fichier yp.xml existe et si non
         // le créer en le récupérant depuis internet
-        let mut xmlf = xdg_dirs.find_data_file("yp.xml");
+        let xmlf = xdg_dirs.find_data_file("yp.xml");
         if xmlf.is_none() {
             let mut resp = reqwest::blocking::get("http://dir.xiph.org/yp.xml").unwrap();
             //let text = resp.text().unwrap();
             let radios_xml = xdg_dirs.place_data_file("yp.xml").unwrap();
             let mut f = File::create(radios_xml).unwrap();
-            resp.copy_to(&mut f);
+            resp.copy_to(&mut f).unwrap();
             pop = true;
         }
 
@@ -113,7 +107,7 @@ impl RadioList {
     // just once upon a week not to stress the server
     pub fn _popuplate(xdg_dirs: &xdg::BaseDirectories, conn: &rusqlite::Connection) {
 
-        let mut radios_xml = xdg_dirs.find_data_file("yp.xml").expect("XML file not found.");
+        let radios_xml = xdg_dirs.find_data_file("yp.xml").expect("XML file not found.");
         let contents = fs::read_to_string(radios_xml.to_str().unwrap()).expect("Can't open radio file.");
 
         let directory: Directory = serde_xml_rs::deserialize(contents.as_bytes()).unwrap();
@@ -122,7 +116,7 @@ impl RadioList {
             conn.execute(
                 "INSERT INTO stations (server_name, listen_url, server_type, bitrate, channels, samplerate, genre, current_song) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
                 params![radio.station, radio.listen_url, radio.server_type, radio.bitrate, radio.channels, radio.samplerate, radio.genre, radio.current_song]
-            );
+            ).unwrap();
         }
     }
 

@@ -1,10 +1,8 @@
 
 use std::fs;
 use std::fs::File;
-use std::path::Path;
 
-use std::io::{Read, Write, stdout, stdin};
-use std::io;
+use std::io::{Read, stdout, stdin};
 use std::sync::mpsc;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::TryRecvError;
@@ -111,7 +109,7 @@ fn main() {
     };
 
     let mut wind = Window::new(&stdout, &mut mpc, &mut radios);
-    let mut currentsong = String::from("");
+    //let mut currentsong = String::from("");
 
     wind.clean();
     wind.draw();
@@ -128,14 +126,14 @@ fn main() {
             // },
             Ok(value8) => {
                 debug!("{:?}", value8);
-                let touch = touchst.getValue(value8);
+                let touch = touchst.get_value(value8);
                 wind.touch(touch);
                 wind.draw();
             }
             Err(TryRecvError::Empty) => {},
             Err(TryRecvError::Disconnected) => panic!("Channel disconnected"),
         }
-        if (wind.refreshable()) {
+        if wind.refreshable() {
             wind.draw();
         }
         sleep(100);

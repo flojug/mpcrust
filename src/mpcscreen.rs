@@ -3,7 +3,7 @@ extern crate termion;
 
 use termion::color;
 // use termion::raw::IntoRawMode;
-use std::io::{Read, Write, stdout, stdin};
+use std::io::{Write};
 use termion::raw::*;
 
 pub struct MpcScreen<'a> {
@@ -13,11 +13,11 @@ pub struct MpcScreen<'a> {
 impl<'a> MpcScreen<'a> {
 
   pub fn new(out: &'a std::io::Stdout) -> MpcScreen<'a> {
-    let mut res = out.lock().into_raw_mode();
+    let res = out.lock().into_raw_mode();
     if res.is_err() {
       panic!("Unable to open stdout.");
     };
-    let mut stdout = res.unwrap();
+    let stdout = res.unwrap();
     MpcScreen {stdout}
   }
 

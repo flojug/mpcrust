@@ -167,6 +167,7 @@ pub struct Window<'a>{
   idx_current_song: usize,
   current_song: String,
   radios: &'a mut RadioList,
+  status_bar: bool,
 }
 
 impl<'a> Window<'a> {
@@ -186,8 +187,9 @@ impl<'a> Window<'a> {
     panels.push(Box::new(ListItemPannel::new(radios.get_list(), None, None, None, Some(Action::SelRadio(0)))));
     panels.push(Box::new(get_keyboard()));
 
-    //let red_controler = Controler::new(
-    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios }
+    panels.push(Box::new(StatusPannel::new()));
+
+    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios, status_bar: false }
   }
 
   pub fn stop(&mut self) {
@@ -197,11 +199,11 @@ impl<'a> Window<'a> {
   fn switch_window(&mut self, which: u16) {
     match which {
       // active queue
-      1 => { self.clean(); self.green = 1; self.yellow = 2; },
+      1 => { self.clean(); self.green = 1; self.yellow = 2; self.status_bar = true; },
       // search
-      2 => { self.clean(); self.green = 5; self.yellow = 4; },
+      2 => { self.clean(); self.green = 5; self.yellow = 4; self.status_bar = false; },
       // search radio
-      3 => { self.clean(); self.green = 6; self.yellow = 7; },
+      3 => { self.clean(); self.green = 6; self.yellow = 7; self.status_bar = false; },
       _ => {}
     }
   }
@@ -211,22 +213,30 @@ impl<'a> Window<'a> {
     self.apply(Some(Action::PlaySong(0)));
   }
 
-  // return true if something has changed and window
-  // must be refreshed
+  // return true if something has changed from outside
+  // and window must be refreshed
   pub fn refreshable(&mut self) -> bool {
-    let mut refr = false;
+    let mut refresh = false;
 
     if let Some(song) = self.mpc.current_song() {
         let title = if song.title.is_some() {song.title.clone().unwrap()} else {song.file.clone()};
         if title != self.current_song {
+            let mut title_status = title.clone();
+            debug!("{:?}", song);
             debug!("{}", title);
             self.panels[1].set_current(&title);
             self.current_song = title;
-            refr = true;
+
+            // compute title for the status bar
+            for (key, value) in &song.tags {
+              title_status = title_status + &String::from(" ") + &key.clone() + &String::from(": ") + &value.clone();
+            }
+            self.panels[8].set_current(&title_status);
+            refresh = true;
         }
     }
 
-    refr
+    refresh
   }
 
   pub fn touch(&mut self, touch: Touch) {
@@ -334,11 +344,19 @@ impl<'a> Window<'a> {
     // }
     self.panels[self.green].draw(&mut self.screen, scbox);
 
-    scbox = ScreenBox::new(1, 13, 50, 3);
-    // for i in 13..16 {
-    //   self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
-    // }
-    self.panels[self.yellow].draw(&mut self.screen, scbox);
+    if ! self.status_bar {
+      scbox = ScreenBox::new(1, 13, 50, 3);
+      // for i in 13..16 {
+      //   self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
+      // }
+      self.panels[self.yellow].draw(&mut self.screen, scbox);
+    } else {
+      scbox = ScreenBox::new(1, 13, 50, 2);
+      self.panels[self.yellow].draw(&mut self.screen, scbox);
+
+      scbox = ScreenBox::new(1, 15, 50, 1);
+      self.panels[8].draw(&mut self.screen, scbox);
+    }
 
     self.flush();
   }

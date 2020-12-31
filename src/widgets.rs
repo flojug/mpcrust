@@ -34,7 +34,7 @@ pub enum Action {
 
 pub trait Widget {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox);
-    fn touch(&mut self, touch: Touch) -> Option<Action>;
+    fn touch(&mut self, _touch: Touch) -> Option<Action> { return None; }
     fn refresh(&mut self, _items: Vec<String>, _idx: usize) {}
     fn set_current(&mut self, _s: &String) {}
 }
@@ -484,5 +484,29 @@ impl Widget for ButtonPannelOneLine {
         }
         ret
     }
+}
 
+#[derive(Debug)]
+pub struct StatusPannel {
+    item: String,
+    idx: usize
+}
+
+impl StatusPannel {
+    pub fn new() -> StatusPannel {
+        StatusPannel { item: String::from(""), idx: 0 }
+    }
+}
+
+impl Widget for StatusPannel {
+    fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
+      let uw = scbox.w as usize;
+      sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", uw)[..], color::Rgb(255, 255, 255));
+      sc.colline(scbox.x, scbox.y, &self.item[self.idx..self.idx+uw], color::Rgb(0,0,0), color::Rgb(255,255,255));
+    }
+
+    fn set_current(&mut self, s: &String) {
+        self.item = s.clone();
+        self.idx = 0;
+    }
 }

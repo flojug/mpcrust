@@ -64,6 +64,19 @@ impl<'a> MpcScreen<'a> {
              ).unwrap();
   }
 
+  pub fn colline<C: termion::color::Color>(&mut self, x: u16 , y: u16, line: &str, fgcol: C, bgcol: C) {
+      write!(self.stdout,
+             "{}{}{}{}{}{}{}",
+             termion::cursor::Goto(x, y),
+             color::Bg(bgcol),
+             color::Fg(fgcol),
+             line,
+             termion::cursor::Goto(x, y),
+             color::Fg(color::Reset),
+             color::Bg(color::Reset)
+             ).unwrap();
+  }
+
   pub fn uline<C: termion::color::Color>(&mut self, x: u16 , y: u16, line: &str, col: C) {
       write!(self.stdout,
              "{}{}{}{}{}{}{}{}{}",

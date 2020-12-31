@@ -307,39 +307,49 @@ impl Widget for Keyboard {
         if let Some(idx) = self.first_line.iter().position(|item| (*item).state == ItemState::Selected) {
             index = idx;
             line = &mut self.first_line;
-            next_line = Some(&mut self.second_line);
-            prev_line = None;
+            next_line = &mut self.second_line;
+            prev_line = &mut self.third_line;
         } else if let Some(idx) = self.second_line.iter().position(|item| (*item).state == ItemState::Selected) {
             index = idx;
             line = &mut self.second_line;
-            next_line = Some(&mut self.third_line);
-            prev_line = Some(&mut self.first_line);
+            next_line = &mut self.third_line;
+            prev_line = &mut self.first_line;
         } else if let Some(idx) = self.third_line.iter().position(|item| (*item).state == ItemState::Selected) {
             index = idx;
             line = &mut self.third_line;
-            next_line = None;
-            prev_line = Some(&mut self.second_line);
+            next_line = &mut self.first_line;
+            prev_line = &mut self.second_line;
         } else {
             return None;
         }
 
-        if (touch == Touch::TouchLeft) && (index > 0) {  // left
+        if touch == Touch::TouchLeft {  // left
             line[index].state = ItemState::NotSelected;
-            line[index-1].state = ItemState::Selected;
+            if index > 0 {
+                line[index-1].state = ItemState::Selected;
+            } else {
+                let pos = line.len()-1;
+                line[pos].state = ItemState::Selected;
+            }
+
         }
-        if (touch == Touch::TouchRight) && (index+1 < line.len()) {  // right
+        if (touch == Touch::TouchRight) && (index+1 <= line.len()) {  // right
             line[index].state = ItemState::NotSelected;
-            line[index+1].state = ItemState::Selected;
+            if index+1 < line.len() {
+                line[index+1].state = ItemState::Selected;
+            } else {
+                line[0].state = ItemState::Selected;
+            }
         }
 
-        if (touch == Touch::TouchDown) && (!next_line.is_none()) {  // down
+        if touch == Touch::TouchDown  {  // down
             line[index].state = ItemState::NotSelected;
-            next_line.unwrap()[index].state = ItemState::Selected;
+            next_line[index].state = ItemState::Selected;
         }
 
-        if (touch == Touch::TouchUp) && (!prev_line.is_none()) {  // up
+        if touch == Touch::TouchUp {  // up
             line[index].state = ItemState::NotSelected;
-            prev_line.unwrap()[index].state = ItemState::Selected;
+            prev_line[index].state = ItemState::Selected;
         }
 
         if (touch == Touch::TouchOk) || (touch == Touch::TouchPlay) {  // apply
@@ -377,11 +387,12 @@ impl Widget for Keyboard {
 #[derive(Debug)]
 pub struct ButtonPannelOneLine {
     buttons: Vec<Button>,
+    one_click: bool
 }
 
 impl ButtonPannelOneLine {
-    pub fn new(buttons: Vec<Button>) -> ButtonPannelOneLine {
-        ButtonPannelOneLine {buttons}
+    pub fn new(buttons: Vec<Button>, one_click: bool) -> ButtonPannelOneLine {
+        ButtonPannelOneLine {buttons, one_click}
     }
 }
 
@@ -419,12 +430,22 @@ impl Widget for ButtonPannelOneLine {
         if (touch == Touch::TouchLeft) && (idx > 0) {  // left
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx-1].state = ItemState::Selected;
-            return None;
+            if self.one_click {
+                // force action when selected
+                return self.buttons[idx-1].action.clone();
+            } else {
+                return None;
+            }
         }
         if (touch == Touch::TouchRight) && (idx < self.buttons.len()-1) {  // right
             self.buttons[idx].state = ItemState::NotSelected;
             self.buttons[idx+1].state = ItemState::Selected;
-            return None;
+            if self.one_click {
+                // force action when selected
+                return self.buttons[idx+1].action.clone();
+            } else {
+                return None;
+            }
         }
 
         if touch == Touch::TouchPlay {

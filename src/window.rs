@@ -141,12 +141,12 @@ fn get_keyboard() -> Keyboard {
 }
 
 
-fn get_red_menu() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_1()) }
+fn get_red_menu() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_1(), true) }
 
 //fn get_green_page_1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_2()) }
 
-fn get_yellow_page2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_4()) }
-fn get_yellow_page1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_3()) }
+fn get_yellow_page2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_4(), true ) }
+fn get_yellow_page1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_3(), true) }
 
 
 pub enum SubWindow {
@@ -197,11 +197,11 @@ impl<'a> Window<'a> {
   fn switch_window(&mut self, which: u16) {
     match which {
       // active queue
-      1 => { self.green = 1; self.yellow = 2; },
+      1 => { self.clean(); self.green = 1; self.yellow = 2; },
       // search
-      2 => { self.green = 5; self.yellow = 4; },
+      2 => { self.clean(); self.green = 5; self.yellow = 4; },
       // search radio
-      3 => { self.green = 6; self.yellow = 7; },
+      3 => { self.clean(); self.green = 6; self.yellow = 7; },
       _ => {}
     }
   }

@@ -85,10 +85,10 @@ fn main() {
         },
         // default keys for my configuration
         None => [
-            56, // 65, // TOUCH_UP,
-            50, //66, // TOUCH_DOWN,
-            52, //68, // TOUCH_LEFT,
-            54, //67, // TOUCH_RIGHT,
+            65, // 65, // TOUCH_UP,
+            66, //66, // TOUCH_DOWN,
+            68, //68, // TOUCH_LEFT,
+            67, //67, // TOUCH_RIGHT,
             49, //38, // TOUCH_1,
             50, //169, // TOUCH_2,
             51, //34, // TOUCH_3,

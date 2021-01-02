@@ -274,7 +274,7 @@ impl Widget for Keyboard {
             sc.line(scbox.x, scbox.y+idx_line, &format!("{:1$}", " ", scbox.w as usize)[..], color::Rgb(0,0,0));
             let nb_butt: u16 = (*line).len() as u16;
             let rest: u16 = (scbox.w - 2*nb_butt) / 2;
-            let mut idx: u16 = rest - 10;
+            let mut idx: u16 = 0; //rest - 10;
             for key in line.iter_mut() {
                 let mut scbox2 = scbox.clone();
                 scbox2.w = 1;
@@ -501,36 +501,43 @@ impl StatusPannel {
 
 impl Widget for StatusPannel {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
+      // refresh each 300 ms
       self.count = self.count + 1;
       if self.count<=3 {
         return;
       }
       self.count = 0;
 
-      let uw = scbox.w as usize;
-      let mut s: String;
-      let ln = self.item.len();
-      if ln<uw-2 {
-        s = format!("{:1$}", self.item, uw).to_owned();
-      } else {
-        s = self.item.clone() + &String::from("  ");
-      }
-      s.push_str(s.clone().as_str());
+      // cut the string to display according to
+      // the width of status bar
+      let stbarwidth = scbox.w as usize;
 
+      let mut s: String;
+      if self.item.len() < stbarwidth - 4 {
+        s = format!(" -> {:1$}", self.item, stbarwidth).to_owned();
+      } else {
+        s = String::from(" -> ") + &self.item.clone();
+      }
+
+      // string to display * 2 and then cut it
+      // according to the cursor self.idx and width
+      // of status bar
+      s.push_str(s.clone().as_str());
       let mut fs: String = String::from("");
       let mut idx = 0;
       for c in s.chars() {
-        if (idx>=self.idx) && (idx<=self.idx+uw) {
+        if (idx>=self.idx) && (idx<=self.idx+stbarwidth) {
             fs.push(c);
         }
         idx = idx + 1;
       }
 
-      sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", uw)[..], color::Rgb(255, 255, 255));
+      sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", stbarwidth)[..], color::Rgb(255, 255, 255));
       sc.colline(scbox.x, scbox.y, &fs, color::Rgb(0,0,0), color::Rgb(255,255,255));
       sc.flush();
 
-      self.idx = (self.idx + 1) % uw;
+      // rotate
+      self.idx = (self.idx + 1) % stbarwidth;
     }
 
     fn set_current(&mut self, s: &String) {

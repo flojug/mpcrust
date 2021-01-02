@@ -189,7 +189,7 @@ impl<'a> Window<'a> {
 
     panels.push(Box::new(StatusPannel::new()));
 
-    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios, status_bar: false }
+    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios, status_bar: true }
   }
 
   pub fn stop(&mut self) {
@@ -210,7 +210,7 @@ impl<'a> Window<'a> {
 
   // play first song
   pub fn init(&mut self) {
-    self.apply(Some(Action::PlaySong(0)));
+    //self.apply(Some(Action::PlaySong(0)));
   }
 
   // return true if something has changed from outside

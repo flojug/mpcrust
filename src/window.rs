@@ -236,6 +236,12 @@ impl<'a> Window<'a> {
         }
     }
 
+    // if status bar is present, refresh it
+    if self.status_bar {
+      let scbox = ScreenBox::new(1, 15, 50, 1);
+      self.panels[8].draw(&mut self.screen, scbox);
+    }
+
     refresh
   }
 

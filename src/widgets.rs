@@ -489,20 +489,48 @@ impl Widget for ButtonPannelOneLine {
 #[derive(Debug)]
 pub struct StatusPannel {
     item: String,
-    idx: usize
+    idx: usize,
+    count: u8
 }
 
 impl StatusPannel {
     pub fn new() -> StatusPannel {
-        StatusPannel { item: String::from(""), idx: 0 }
+        StatusPannel { item: String::from(""), idx: 0, count: 0 }
     }
 }
 
 impl Widget for StatusPannel {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
+      self.count = self.count + 1;
+      if self.count<=3 {
+        return;
+      }
+      self.count = 0;
+
       let uw = scbox.w as usize;
+      let mut s: String;
+      let ln = self.item.len();
+      if ln<uw-2 {
+        s = format!("{:1$}", self.item, uw).to_owned();
+      } else {
+        s = self.item.clone() + &String::from("  ");
+      }
+      s.push_str(s.clone().as_str());
+
+      let mut fs: String = String::from("");
+      let mut idx = 0;
+      for c in s.chars() {
+        if (idx>=self.idx) && (idx<=self.idx+uw) {
+            fs.push(c);
+        }
+        idx = idx + 1;
+      }
+
       sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", uw)[..], color::Rgb(255, 255, 255));
-      sc.colline(scbox.x, scbox.y, &self.item[self.idx..self.idx+uw], color::Rgb(0,0,0), color::Rgb(255,255,255));
+      sc.colline(scbox.x, scbox.y, &fs, color::Rgb(0,0,0), color::Rgb(255,255,255));
+      sc.flush();
+
+      self.idx = (self.idx + 1) % uw;
     }
 
     fn set_current(&mut self, s: &String) {

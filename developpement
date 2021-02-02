@@ -8,6 +8,8 @@ Client MPC
 Ecouter radio
 
 Ecouter youtube
+crate rafy
+
 
 Facile à utiliser avec LIRC
 
@@ -50,4 +52,5 @@ http://www.youtube.com/watch_videos?video_ids=Iybzt61mMRk,9j_nubpvg7Y,8QyzInh-rJ
 telnet ice2.ikoula.net-radio.fr 80
 GET frequence3.flac HTTP1/1
 Hostname: ice2.ikoula.net-radio.fr
+
 

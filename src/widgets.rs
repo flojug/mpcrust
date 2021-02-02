@@ -510,7 +510,8 @@ impl Widget for StatusPannel {
 
       // cut the string to display according to
       // the width of status bar
-      let stbarwidth = scbox.w as usize;
+      let mut stbarwidth = scbox.w as usize;
+      stbarwidth = stbarwidth - 1;
 
       let mut s: String;
       if self.item.len() < stbarwidth - 4 {
@@ -532,8 +533,8 @@ impl Widget for StatusPannel {
         idx = idx + 1;
       }
 
-      sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", stbarwidth)[..], color::Rgb(255, 255, 255));
-      sc.colline(scbox.x, scbox.y, &fs, color::Rgb(0,0,0), color::Rgb(255,255,255));
+      sc.line(scbox.x, scbox.y, &format!("{:1$}", " ", stbarwidth)[..], color::Rgb(0, 0, 0));
+      sc.line(scbox.x, scbox.y, &fs, color::Rgb(255,255,255));
       sc.flush();
 
       // rotate

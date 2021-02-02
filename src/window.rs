@@ -282,16 +282,25 @@ impl<'a> Window<'a> {
       Some(Action::Pause) => {
       },
       Some(Action::DownSearch(which)) => {
+        for i in 3..14 {
+          self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
+        }
         let newlist = self.mpc.down(which);
         self.panels[5].refresh(newlist, 0)
       },
       Some(Action::UpSearch(which)) => {
+        for i in 3..14 {
+          self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
+        }
         let newlist = self.mpc.up(which);
         let idx = self.mpc.get_idx_selected();
         self.panels[5].refresh(newlist, idx)
       },
       Some(Action::SelSearch(which, sel)) => {
         if sel {
+          for i in 3..14 {
+            self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
+          }
           self.mpc.select(which);
           let newlist = self.mpc.get_songs();
           self.panels[1].refresh(newlist, 0);
@@ -310,6 +319,9 @@ impl<'a> Window<'a> {
         self.mpc.play_song(0);
       },
       Some(Action::Search(search)) => {
+        for i in 3..14 {
+          self.screen.line(1, i, &format!("{:1$}", " ", 50 as usize)[..], color::Rgb(0,0,0));
+        }
         // search in repository
         if self.green == 5 {
           let newlist = self.mpc.search(&search);

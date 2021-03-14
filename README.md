@@ -4,19 +4,17 @@ Work in progress
 But
 ==============
 Faire une chaîne Audiophile à base de Raspberry Pi.
+- écouter morceaux enregistrés sur un disque dur local
+- écouter radios
+
 Avec un écran Touchscreen sans utiliser l'écran tactile (ne fonctionne plus).
+
 Taille de l'écran : 50x15 pour avoir de gros caractères visibles de loin.
+
 Contrôle avec une télécommande IR simplifiée (juste quelques boutons)
 
-Client MPC
-Ecouter radio
-Ecouter youtube
-Facile à utiliser avec LIRC
-Pouvoir jouer des mélodies programmées
 
--> Apprendre Rust
--> Pouvoir contrôler avec télécommande IR car le Touchscreen ne fonctionne plus
--> Tentative pour utiliser ncmpc ou ncmpcpp (et plusieurs autres clients mpc) mais impossible de les contrôler par IR
+-> Tentatives pour utiliser ncmpc ou ncmpcpp (et plusieurs autres clients mpc) mais impossible de les contrôler par IR (trop complexe de gérer les différentes popups avec seulement quelques boutons de la télécommande).
 
 
 Matériel
@@ -31,6 +29,8 @@ Un disque SSD 512 Go pour stocker la musique
 
 Ecran Tactile Officiel 7" 800x480 Touchscreen
 Terminal 100x30
+![Ecran+Raspberry](./images/IMG_1358.JPG)
+
 
 DAC U-SABRE
 https://www.audiophonics.fr/fr/dac-sans-volume/audiophonics-u-sabre-usb-dac-24bit96khz-sa9023-es9023-otg-v22e-tcxo-edition-p-11056.html

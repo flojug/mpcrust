@@ -150,11 +150,12 @@ Désactiver WIFI et Bluetooth
 -----------------
 Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
 
-    echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
+Dans /boot/config.txt
 
-
-    /boot/config
     dtoverlay=disable-bt
+    dtoverlay=disable-wifi
+
+Puis
 
     sudo systemctl disable hciuart.service
     sudo systemctl disable bluealsa.service

@@ -68,7 +68,10 @@ Installation
 Installer Raspbian
 -----------------
 Raspberry Pi OS (32-bit) Lite
+
 Installer mpd
+
+[Liste des packages installés](./install/packages.txt)
 
 
 Configuration de l'écran, terminal 50x15
@@ -179,6 +182,77 @@ Monter la partition de musique
 -----------------
 
     # mount /dev/sda1 /var/lib/mpd/music
+
+Pare-feu basique
+-----------------
+
+    # cat /etc/init.d/packetfilter
+    #!/bin/bash
+
+    ### BEGIN INIT INFO
+    # Provides:          packetfilter
+    # Required-Start:    $remote_fs $syslog
+    # Required-Stop:     $remote_fs $syslog
+    # Default-Start:     2 3 4 5
+    # Default-Stop:      0 1 6
+    # Short-Description: DÃ©marre les rÃ¨gles iptables
+    # Description:       Charge la configuration du pare-feu iptables
+    ### END INIT INFO
+
+    # Script de controle du filtrage ip.
+
+    PATH=/bin:/sbin:/usr/sbin:/usr/bin
+
+    case "$1" in
+        start)
+        echo -n "Turning on packet filtering:"
+
+        # Par defaut
+        iptables -F
+        iptables -X
+        iptables -t nat -F
+        iptables -t nat -X
+        iptables -P INPUT ACCEPT
+        iptables -P OUTPUT ACCEPT
+        iptables -P FORWARD DROP
+
+        # Connections etablies
+        iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+        # Ssh depuis l'exterieur
+        iptables -A INPUT -p tcp -i eth0 --dport 22 -j ACCEPT
+
+        # ICMP
+        iptables -A INPUT -p icmp -i eth0 -j ACCEPT
+
+        # On bloque le reste pour eth0
+        iptables -A INPUT -i eth0 -j DROP
+
+        echo "."
+        ;;
+        stop)
+        echo -n "Turning off packet filtering:"
+        iptables -F
+        iptables -X
+        iptables -t nat -F
+        iptables -t nat -X
+        iptables -P INPUT ACCEPT
+        iptables -P OUTPUT ACCEPT
+        iptables -P FORWARD DROP
+        echo "."
+        ;;
+        restart)
+        $0 stop
+        sleep 2
+        $0 start
+        ;;
+        *)
+        echo "Usage: /etc/init.d/packetfilter {start|stop|restart}"
+        exit 1
+        ;;
+    esac
+
+    # /etc/init.d/packetfilter start
 
 
 splash

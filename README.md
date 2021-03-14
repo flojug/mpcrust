@@ -83,77 +83,6 @@ Touches
     .local/share/mpcrust/keys.json
 
 
-splash
------------------
-
-### fbset
-
-    mode "800x480"
-      geometry 800 480 800 480 32
-      timings 0 0 0 0 0 0 0
-      rgba 8/16,8/8,8/0,8/24
-    endmode
-
-https://yingtongli.me/blog/2016/12/21/splash.html
-
-mais ne pas faire : Disable the login prompt by running systemctl disable getty@tty1 as root.
-
-
-https://raspberrypi.stackexchange.com/questions/59310/remove-boot-messages-all-text-in-jessie
-https://retropie.org.uk/docs/FAQ/#how-do-i-hide-the-boot-text
-https://retropie.org.uk/forum/topic/14299/tutorial-remove-boot-text-on-the-raspberry-pi-for-noobs
-
-NON :
-http://redsymbol.net/linux-kernel-boot-parameters//2.6.25/
-Enlever couleurs écran
-dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=27515498-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait logo.nologo consoleblank=0 loglevel=1 quiet  vt.default_red=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_grn=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_blu=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-
-    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
-
-    [Unit]
-    Description=Restore system coloes
-    Before=getty@tty1.service
-
-    [Service]
-    Type=oneshot
-    ExecStart=/home/pi/restore-colors
-
-    [Install]
-    WantedBy=getty.target
-
-
-    cat > /home/pi/restore-colors
-    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
-    FIN NON
-
-
-bluetooth
------------------
-
-    /boot/config
-    dtoverlay=disable-bt
-
-    sudo systemctl disable hciuart.service
-    sudo systemctl disable bluealsa.service
-    sudo systemctl disable bluetooth.service
-
-    sudo apt-get purge bluez -y
-    sudo apt-get autoremove -y
-
-
-
-
-wifi
------------------
-
-    echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
-
-
 Configuration IR
 -----------------
 
@@ -215,14 +144,78 @@ tui-rs + termion
 crate mpd
 mappage boutons IRC
 
+
+
+Désactiver WIFI et Bluetooth
+-----------------
+Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
+    echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
+
+
+    /boot/config
+    dtoverlay=disable-bt
+
+    sudo systemctl disable hciuart.service
+    sudo systemctl disable bluealsa.service
+    sudo systemctl disable bluetooth.service
+
+    sudo apt-get purge bluez -y
+    sudo apt-get autoremove -y
+
+
 Monter la partition de musique
+-----------------
+
   mount /dev/sda1 /var/lib/mpd/music
 
 
-Utilisation
-==============
+splash
+-----------------
+
+### fbset
+
+    mode "800x480"
+      geometry 800 480 800 480 32
+      timings 0 0 0 0 0 0 0
+      rgba 8/16,8/8,8/0,8/24
+    endmode
+
+https://yingtongli.me/blog/2016/12/21/splash.html
+
+mais ne pas faire : Disable the login prompt by running systemctl disable getty@tty1 as root.
 
 
+https://raspberrypi.stackexchange.com/questions/59310/remove-boot-messages-all-text-in-jessie
+https://retropie.org.uk/docs/FAQ/#how-do-i-hide-the-boot-text
+https://retropie.org.uk/forum/topic/14299/tutorial-remove-boot-text-on-the-raspberry-pi-for-noobs
+
+NON :
+http://redsymbol.net/linux-kernel-boot-parameters//2.6.25/
+Enlever couleurs écran
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=27515498-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait logo.nologo consoleblank=0 loglevel=1 quiet  vt.default_red=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_grn=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_blu=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+
+    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
+    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
+    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
+
+    [Unit]
+    Description=Restore system coloes
+    Before=getty@tty1.service
+
+    [Service]
+    Type=oneshot
+    ExecStart=/home/pi/restore-colors
+
+    [Install]
+    WantedBy=getty.target
+
+
+    cat > /home/pi/restore-colors
+    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
+    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
+    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
+    FIN NON
 
 
 Radios
@@ -232,3 +225,13 @@ http://dir.xiph.org/yp.xml
     telnet ice2.ikoula.net-radio.fr 80
     GET frequence3.flac HTTP1/1
     Hostname: ice2.ikoula.net-radio.fr
+
+
+Utilisation
+==============
+
+Configuration des touches
+-----------------
+
+
+

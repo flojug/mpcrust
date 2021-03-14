@@ -93,11 +93,6 @@ Faire tourner l'écran si besoin
     lcd_rotate=2
     ...
 
-Touches
------------------
-    .local/share/mpcrust/keys.json
-
-
 Configuration IR
 -----------------
 
@@ -106,62 +101,105 @@ Configuration IR
     dtoverlay=gpio-ir
     ...
 
-
     apt install ir-keytable
     apt install inputlirc lirc
 
 Connaître le /dev/sys utilisé
 
     # ir-keytable
+    Found /sys/class/rc/rc0/ (/dev/input/event1) with:
+    Name: gpio_ir_recv
+    Driver: gpio_ir_recv, table: rc-rc6-mce
+    LIRC device: /dev/lirc0
+    Attached BPF protocols: Fonction non implantÃ©e
+    Supported kernel protocols: lirc rc-5 rc-5-sz jvc sony nec sanyo mce_kbd rc-6 sharp xmp imon
+    Enabled kernel protocols: lirc nec
+    bus: 25, vendor/product: 0001:0001, version: 0x0100
+    Repeat delay = 500 ms, repeat period = 125 ms
 
-Initialiser un protocole
+Initialiser un protocole IR
 
     # cat /sys/class/rc/rc0/protocols
+    rc-5 nec rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon [lirc]
     # echo nec > /sys/class/rc/rc0/protocols
+    # cat /sys/class/rc/rc0/protocols
+    rc-5 [nec] rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon [lirc]
+
 
     ir-keytable -p <protocole>
+
+Tester les événements IR avec la télécommande
+
     ir-keytable -t
 
-Générer le fichier /etc/rc_keymaps/one_for_all.toml
+Générer le fichier /etc/rc_keymaps/meliconi_tlc02.toml (correspondant à la télécommande) avec les bonnes touches.
+
+    # cat /etc/rc_keymaps/meliconi_tlc02.toml
+    [[protocols]]
+    name = "meliconi_tlc02"
+    protocol = "nec"
+    [protocols.scancodes]
+    0x411 = "KEY_1"
+    0x414 = "KEY_4"
+    0x417 = "KEY_7"
+    0x453 = "KEY_LIST"
+    0x403 = "KEY_MINUS"
+    0x443 = "KEY_MENU"
+    0x420 = "KEY_TEXT"
+    0x407 = "KEY_LEFT"
+    0x428 = "KEY_BACK"
+    0x491 = "KEY_ADDRESSBOOK"
+    0x495 = "KEY_SAVE"
+    0x48f = "KEY_PREVIOUS"
+    0x472 = "KEY_R"
+    0x40b = "KEY_SCREEN"
+    0x412 = "KEY_2"
+    0x415 = "KEY_5"
+    0x418 = "KEY_8"
+    0x410 = "KEY_0"
+    0x41e = "KEY_FAVORITES"
+    0x409 = "KEY_MUTE"
+    0x47c = "KEY_HOME"
+    0x440 = "KEY_UP"
+    0x444 = "KEY_M"
+    0x441 = "KEY_DOWN"
+    0x479 = "KEY_R"
+    0x4b0 = "KEY_PLAY"
+    0x471 = "KEY_G"
+    0x4f0 = "KEY_RADIO"
+    0x413 = "KEY_3"
+    0x416 = "KEY_6"
+    0x419 = "KEY_0"
+    0x41a = "KEY_O"
+    0x400 = "KEY_CHANNELUP"
+    0x401 = "KEY_CHANNELDOWN"
+    0x445 = "KEY_CONTEXT_MENU"
+    0x421 = "KEY_N"
+    0x406 = "KEY_RIGHT"
+    0x45b = "KEY_EXIT"
+    0x4aa = "KEY_INFO"
+    0x4bd = "KEY_RECORD"
+    0x4ba = "KEY_PAUSE"
+    0x463 = "KEY_Y"
+    0x439 = "KEY_SUBTITLE"
+    0x4b1 = "KEY_STOP"
+    0x48e = "KEY_X"
+    0x461 = "KEY_B"
 
 Ajouter dans /etc/rc.local
-
-    ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
-
-
-    cat /etc/default/inputlirc
-
-    # Options to be passed to inputlirc.
-    EVENTS="/dev/input/event0"
-    OPTIONS="-g -m 0 -c"
-    # EVENTS="/dev/input/event*"
-    # OPTIONS=
-
-Il faut désactiver lircd (?? à voir)
-
-Associer les touches à des événements claviers
-    # cat lircrc
-    begin
-         prog = irexec
-         button = KEY_POWER
-         config = /home/pi/atou.sh "a"
-    end
-    begin
-         prog = irexec
-         button = KEY_POWER2
-         config = /home/pi/atou.sh "b"
-    end
-    begin
-         prog = irexec
-         button = KEY_TV_AV
-         config = /home/pi/atou.sh "c"
-    end
-    ...
 
     # cat /etc/rc.local
     ...
     ir-keytable -c -w /etc/rc_keymaps/meliconi_tlc02.toml --sysdev rc0
     ...
+
+
+    # cat /etc/default/inputlirc
+    # Options to be passed to inputlirc.
+    EVENTS="/dev/input/event0"
+    OPTIONS="-g -m 0 -c"
+    # EVENTS="/dev/input/event*"
+    # OPTIONS=
 
 
 Configurer le bouton pour démarrer par IR
@@ -294,63 +332,21 @@ Pare-feu basique
     # update-rc.d packetfilter defaults
     # /etc/init.d/packetfilter start
 
-
-splash
+Lancer mpcrust
 -----------------
 
-    [PAS TERMINE]
+Compiler mpcrust sur le raspberry (pas de chaine de crosscompilation à mettre en place).
 
-        # cat /boot/config.txt
-        ...
-        disable_splash=1
-        avoid_warnings=1
-        ...
+    pi@host:~ cd mpcrust
+    pi@host:~ cargo build release
+    pi@host:~ cat /home/pi/.bashrc
+    ....
+    /home/pi/launchmpcrust.sh
 
+    pi@host:~ cat /home/pi/launchmpcrust.sh
+    #!/bin/sh
 
-### fbset
-
-    mode "800x480"
-      geometry 800 480 800 480 32
-      timings 0 0 0 0 0 0 0
-      rgba 8/16,8/8,8/0,8/24
-    endmode
-
-https://yingtongli.me/blog/2016/12/21/splash.html
-
-mais ne pas faire : Disable the login prompt by running systemctl disable getty@tty1 as root.
-
-
-https://raspberrypi.stackexchange.com/questions/59310/remove-boot-messages-all-text-in-jessie
-https://retropie.org.uk/docs/FAQ/#how-do-i-hide-the-boot-text
-https://retropie.org.uk/forum/topic/14299/tutorial-remove-boot-text-on-the-raspberry-pi-for-noobs
-
-NON :
-http://redsymbol.net/linux-kernel-boot-parameters//2.6.25/
-Enlever couleurs écran
-dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=27515498-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait logo.nologo consoleblank=0 loglevel=1 quiet  vt.default_red=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_grn=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 vt.default_blu=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-
-    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
-
-    [Unit]
-    Description=Restore system coloes
-    Before=getty@tty1.service
-
-    [Service]
-    Type=oneshot
-    ExecStart=/home/pi/restore-colors
-
-    [Install]
-    WantedBy=getty.target
-
-
-    cat > /home/pi/restore-colors
-    echo -n 0,0,0,0,170,170,170,170,85,85,85,85,255,255,255,255 > /sys/module/vt/parameters/default_blu
-    echo -n 0,0,170,85,0,0,170,170,85,85,255,255,85,85,255,255 > /sys/module/vt/parameters/default_grn
-    echo -n 0,170,0,170,0,170,0,170,85,255,85,255,85,255,85,255 > /sys/module/vt/parameters/default_red
-    FIN NON
+    /home/pi/mpcrust/target/release/mpcrust
 
 
 Radios
@@ -368,5 +364,7 @@ Utilisation
 Configuration des touches
 -----------------
 
+    pi@host:~ $ cat .local/share/mpcrust/keys.json
+    [65, 66, 68, 67, 38, 169, 34, 39, 40, 45, 168, 95, 97, 160, 44, 110, 114, 103, 121, 98]
 
-
+Correspond à : TouchUp, TouchDown, TouchLeft, TouchRight, Touch1, Touch2, Touch3, Touch4, Touch5, Touch6, Touch7, Touch8, Touch9, Touch0, TouchPlay, TouchOk, TouchRed, TouchGreen, TouchYellow, TouchBlue, TouchNone

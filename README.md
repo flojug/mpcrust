@@ -68,11 +68,13 @@ Installation
 Installer Raspbian
 -----------------
 Raspberry Pi OS (32-bit) Lite
+Installer mpd
+
 
 Configuration de l'écran, terminal 50x15
 -----------------
 
-    # cat /etc/default/console-setup
+    # cat /etc/default/console-setup
     ...
     FONTFACE="Terminus"
     FONTSIZE="16x32"

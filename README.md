@@ -149,6 +149,7 @@ mappage boutons IRC
 Désactiver WIFI et Bluetooth
 -----------------
 Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
+
     echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 
 

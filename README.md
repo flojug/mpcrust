@@ -59,29 +59,34 @@ La chaine une fois assemblée :
 
 Installation
 ==============
+
 Installer Raspbian
+-----------------
 Raspberry Pi OS (32-bit) Lite
 
 Configuration de l'écran
+-----------------
+
     vi /etc/default/console-setup
     FONTFACE="Terminus"
     FONTSIZE="16x32"
     etc/init.d/console-setup.sh restart
 
 Terminal 50x15
+-----------------
+
     vi /boot/config.txt
     lcd_rotate=2
 
 Touches
-==============
-
+-----------------
     .local/share/mpcrust/keys.json
 
 
 splash
-==============
+-----------------
 
-## fbset
+### fbset
 
     mode "800x480"
       geometry 800 480 800 480 32
@@ -128,7 +133,8 @@ dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=27515498-
 
 
 bluetooth
-==============
+-----------------
+
     /boot/config
     dtoverlay=disable-bt
 
@@ -143,12 +149,13 @@ bluetooth
 
 
 wifi
-==============
+-----------------
+
     echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 
 
 Configuration IR
-==============
+-----------------
 
     vi /boot/config.txt
     dtoverlay=gpio-ir
@@ -222,6 +229,6 @@ Radios
 ==============
 http://dir.xiph.org/yp.xml
 
-telnet ice2.ikoula.net-radio.fr 80
-GET frequence3.flac HTTP1/1
-Hostname: ice2.ikoula.net-radio.fr
+    telnet ice2.ikoula.net-radio.fr 80
+    GET frequence3.flac HTTP1/1
+    Hostname: ice2.ikoula.net-radio.fr

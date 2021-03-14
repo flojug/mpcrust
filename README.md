@@ -52,7 +52,9 @@ Un disque SSD 512 Go pour stocker la musique
 
 La chaine une fois assemblée :
 -----------------
-![Chaine](./images/IMG_1398.JPG)
+![Chaine1](./images/IMG_1368.JPG)
+![Chaine2](./images/IMG_1383.JPG)
+![Chaine3](./images/IMG_1386.JPG)
 
 
 Installation

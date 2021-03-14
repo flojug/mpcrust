@@ -158,6 +158,38 @@ Associer les touches à des événements claviers
     end
     ...
 
+    # cat /etc/rc.local
+    ...
+    ir-keytable -c -w /etc/rc_keymaps/meliconi_tlc02.toml --sysdev rc0
+    ...
+
+
+Configurer le bouton pour démarrer par IR
+-----------------
+
+    Voir : [Support for RemotePi Board for Pi 4, RemotePi Board for Pi 3 B+, Pi 3, Pi 2 and Pi 1 B+ , RemotePi Board for Pi 1 Model B](https://www.msldigital.com/pages/support-for-remotepi-board-plus-2015/)
+
+    # cat /etc/rc.local
+    ...
+    (/etc/irswitch.sh)&
+    ...
+
+    # cat /etc/irswitch.sh
+    #!/bin/bash
+    # this is the GPIO pin receiving the shut-down signal
+    GPIOpin1=14
+    echo "$GPIOpin1" > /sys/class/gpio/export
+    echo "in" > /sys/class/gpio/gpio$GPIOpin1/direction
+    while true; do
+      sleep 1
+      power=$(cat /sys/class/gpio/gpio$GPIOpin1/value)
+      if [ $power != 0 ]; then
+        echo "out" > /sys/class/gpio/gpio$GPIOpin1/direction
+        echo "1" > /sys/class/gpio/gpio$GPIOpin1/value
+        sleep 3
+        sudo shutdown -h now
+      fi
+    done
 
 
 Désactiver WIFI et Bluetooth
@@ -180,6 +212,13 @@ Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
 
 Monter la partition de musique
 -----------------
+
+    Le disque /dev/sda1 contient la musique (répertoires + morceaux). On monte directement le répertoire de musique par défaut de mpd sur la racine du disque.
+
+    # cat /etc/fstab
+    ...
+    /dev/sda1 /var/lib/mpd/music exfat defaults,nofail 0 0
+    ...
 
     # mount /dev/sda1 /var/lib/mpd/music
 
@@ -252,11 +291,21 @@ Pare-feu basique
         ;;
     esac
 
+    # update-rc.d packetfilter defaults
     # /etc/init.d/packetfilter start
 
 
 splash
 -----------------
+
+    [PAS TERMINE]
+
+        # cat /boot/config.txt
+        ...
+        disable_splash=1
+        avoid_warnings=1
+        ...
+
 
 ### fbset
 

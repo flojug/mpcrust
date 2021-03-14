@@ -31,6 +31,7 @@ Terminal 100x30
 RemotePi Board for Pi 3B and Pi 3B+
 -----------------
 https://www.msldigital.com/collections/all-products/products/remotepi-board-for-pi-3
+
 Pour pouvoir allumer, éteindre, contrôler le Raspberry par IR
 
 ![Remoteboard](./images/IMG_1362.JPG)

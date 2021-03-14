@@ -159,25 +159,24 @@ Désactiver WIFI et Bluetooth
 -----------------
 Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
 
-Dans /boot/config.txt
-
+    # cat /boot/config.txt
+    ...
     dtoverlay=disable-bt
     dtoverlay=disable-wifi
+    ...
 
-Puis
+    # sudo systemctl disable hciuart.service
+    # sudo systemctl disable bluealsa.service
+    # sudo systemctl disable bluetooth.service
 
-    sudo systemctl disable hciuart.service
-    sudo systemctl disable bluealsa.service
-    sudo systemctl disable bluetooth.service
-
-    sudo apt-get purge bluez -y
-    sudo apt-get autoremove -y
+    # sudo apt-get purge bluez -y
+    # sudo apt-get autoremove -y
 
 
 Monter la partition de musique
 -----------------
 
-  mount /dev/sda1 /var/lib/mpd/music
+    # mount /dev/sda1 /var/lib/mpd/music
 
 
 splash

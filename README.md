@@ -125,10 +125,7 @@ Initialiser un protocole IR
     # cat /sys/class/rc/rc0/protocols
     rc-5 [nec] rc-6 jvc sony rc-5-sz sanyo sharp mce_kbd xmp imon [lirc]
 
-
-    ir-keytable -p <protocole>
-
-Tester les événements IR avec la télécommande
+Tester les événements IR avec la télécommande (si ça ne fonctionne pas, c'est probablement que le protocole ne correspond pas avec votre télécommande)
 
     ir-keytable -t
 
@@ -193,6 +190,7 @@ Ajouter dans /etc/rc.local
     ir-keytable -c -w /etc/rc_keymaps/meliconi_tlc02.toml --sysdev rc0
     ...
 
+Je ne sais plus si c'est utile :
 
     # cat /etc/default/inputlirc
     # Options to be passed to inputlirc.

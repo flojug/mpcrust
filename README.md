@@ -205,7 +205,7 @@ Ajouter dans /etc/rc.local
 Configurer le bouton pour démarrer par IR
 -----------------
 
-    Voir : [Support for RemotePi Board for Pi 4, RemotePi Board for Pi 3 B+, Pi 3, Pi 2 and Pi 1 B+ , RemotePi Board for Pi 1 Model B](https://www.msldigital.com/pages/support-for-remotepi-board-plus-2015/)
+Voir : [Support for RemotePi Board for Pi 4, RemotePi Board for Pi 3 B+, Pi 3, Pi 2 and Pi 1 B+ , RemotePi Board for Pi 1 Model B](https://www.msldigital.com/pages/support-for-remotepi-board-plus-2015/)
 
     # cat /etc/rc.local
     ...

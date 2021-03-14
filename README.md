@@ -251,7 +251,7 @@ Pour ceux qui n'aiment pas baigner dans les ondes électromagnatiques
 Monter la partition de musique
 -----------------
 
-    Le disque /dev/sda1 contient la musique (répertoires + morceaux). On monte directement le répertoire de musique par défaut de mpd sur la racine du disque.
+Le disque /dev/sda1 contient la musique (répertoires + morceaux). On monte directement le répertoire de musique par défaut de mpd sur la racine du disque.
 
     # cat /etc/fstab
     ...

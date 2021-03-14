@@ -19,7 +19,7 @@ Contrôle avec une télécommande IR simplifiée (juste quelques boutons)
 
 Matériel
 ==============
-Raspberry Pi 3+
+Raspberry Pi 3B+
 -----------------
 
 Ecran Tactile Officiel 7" 800x480 Touchscreen

@@ -50,6 +50,10 @@ Télécommande standard
 Un disque SSD 512 Go pour stocker la musique
 -----------------
 
+Une fois assemblé :
+-----------------
+![Chaine](./images/IMG_1398.JPG)
+
 
 Installation
 ==============

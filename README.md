@@ -34,9 +34,13 @@ Terminal 100x30
 
 DAC U-SABRE
 https://www.audiophonics.fr/fr/dac-sans-volume/audiophonics-u-sabre-usb-dac-24bit96khz-sa9023-es9023-otg-v22e-tcxo-edition-p-11056.html
+![DAC](./images/IMG_1361.JPG)
 
-Ampli
+Ampli FX-AUDIO
 https://www.audiophonics.fr/fr/amplificateur-full-digital-fda/fx-audio-d802c-pro-amplificateur-fda-bluetooth-42-nfc-class-d-sta326-2x80w-4-ohm-noir-p-12850.html
+![Ampli](./images/IMG_1360.JPG)
+
+
 
 
 Installation

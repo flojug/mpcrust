@@ -69,19 +69,24 @@ Installer Raspbian
 -----------------
 Raspberry Pi OS (32-bit) Lite
 
-Configuration de l'écran
+Configuration de l'écran, terminal 50x15
 -----------------
 
-    vi /etc/default/console-setup
+    # cat /etc/default/console-setup
+    ...
     FONTFACE="Terminus"
     FONTSIZE="16x32"
-    etc/init.d/console-setup.sh restart
+    ...
 
-Terminal 50x15
+    # etc/init.d/console-setup.sh restart
+
+Faire tourner l'écran si besoin
 -----------------
 
-    vi /boot/config.txt
+    # cat /boot/config.txt
+    ...
     lcd_rotate=2
+    ...
 
 Touches
 -----------------
@@ -91,19 +96,23 @@ Touches
 Configuration IR
 -----------------
 
-    vi /boot/config.txt
+    # cat /boot/config.txt
+    ...
     dtoverlay=gpio-ir
+    ...
 
 
     apt install ir-keytable
+    apt install inputlirc lirc
 
 Connaître le /dev/sys utilisé
-    ir-keytable
+
+    # ir-keytable
 
 Initialiser un protocole
 
-    cat /sys/class/rc/rc0/protocols
-    echo nec > /sys/class/rc/rc0/protocols
+    # cat /sys/class/rc/rc0/protocols
+    # echo nec > /sys/class/rc/rc0/protocols
 
     ir-keytable -p <protocole>
     ir-keytable -t
@@ -111,9 +120,9 @@ Initialiser un protocole
 Générer le fichier /etc/rc_keymaps/one_for_all.toml
 
 Ajouter dans /etc/rc.local
+
     ir-keytable -c -w /etc/rc_keymaps/one_for_all.toml --sysdev rc0
 
-    apt install inputlirc lirc
 
     cat /etc/default/inputlirc
 
@@ -143,11 +152,6 @@ Associer les touches à des événements claviers
          config = /home/pi/atou.sh "c"
     end
     ...
-
-
-tui-rs + termion
-crate mpd
-mappage boutons IRC
 
 
 

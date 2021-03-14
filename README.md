@@ -201,6 +201,14 @@ Ajouter dans /etc/rc.local
     # EVENTS="/dev/input/event*"
     # OPTIONS=
 
+Configuration des touches
+-----------------
+
+    pi@host:~ $ cat .local/share/mpcrust/keys.json
+    [65, 66, 68, 67, 38, 169, 34, 39, 40, 45, 168, 95, 97, 160, 44, 110, 114, 103, 121, 98]
+
+Correspond à : TouchUp, TouchDown, TouchLeft, TouchRight, Touch1, Touch2, Touch3, Touch4, Touch5, Touch6, Touch7, Touch8, Touch9, Touch0, TouchPlay, TouchOk, TouchRed, TouchGreen, TouchYellow, TouchBlue, TouchNone
+
 
 Configurer le bouton pour démarrer par IR
 -----------------
@@ -361,10 +369,3 @@ http://dir.xiph.org/yp.xml
 Utilisation
 ==============
 
-Configuration des touches
------------------
-
-    pi@host:~ $ cat .local/share/mpcrust/keys.json
-    [65, 66, 68, 67, 38, 169, 34, 39, 40, 45, 168, 95, 97, 160, 44, 110, 114, 103, 121, 98]
-
-Correspond à : TouchUp, TouchDown, TouchLeft, TouchRight, Touch1, Touch2, Touch3, Touch4, Touch5, Touch6, Touch7, Touch8, Touch9, Touch0, TouchPlay, TouchOk, TouchRed, TouchGreen, TouchYellow, TouchBlue, TouchNone

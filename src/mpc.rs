@@ -153,6 +153,11 @@ impl Mpc {
         self.conn.repeat(value).unwrap();
     }
 
+    pub fn rescan(&mut self) {
+        self.test_connect();
+        self.conn.rescan().unwrap();
+    }
+
     pub fn single(&mut self, value: bool) {
         self.test_connect();
         self.conn.single(value).unwrap();

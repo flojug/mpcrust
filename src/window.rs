@@ -6,6 +6,17 @@ use crate::widgets::*;
 use crate::mpc::*;
 use crate::radio::*;
 
+
+use std::path::Path;
+use std::ffi::OsStr;
+
+fn get_extension_from_filename(filename: &str) -> Option<&str> {
+    Path::new(filename)
+        .extension()
+        .and_then(OsStr::to_str)
+}
+
+
 #[derive(PartialEq)]
 #[derive(Debug)]
 pub enum Touch {
@@ -74,6 +85,14 @@ fn get_buttons_1() -> Vec<Button> {
     v.push(Button::new("6-PARAMS", ItemState::NotSelected, Touch::Touch6, color::Rgb(255,0,0), Some(Action::SwitchWindow(6))));
     v
 }
+
+fn get_params_menus() -> Vec<Button> {
+    let mut v = Vec::new();
+    v.push(Button::new("1-RESCAN MUSIC ", ItemState::Selected, Touch::Touch1, color::Rgb(0,255,0), Some(Action::Rescan)));
+    v.push(Button::new("2-RESTART", ItemState::NotSelected, Touch::Touch2, color::Rgb(0,255,0), Some(Action::Restart)));
+    v
+}
+
 
 // fn get_buttons_2() -> Vec<Button> {
 //     let mut v = Vec::new();
@@ -148,6 +167,8 @@ fn get_red_menu() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_
 fn get_yellow_page2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_4(), true ) }
 fn get_yellow_page1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_3(), true) }
 
+fn get_params_page() -> ButtonPannelMultiLine { ButtonPannelMultiLine::new(get_params_menus(), true) }
+fn get_empty_foot() -> ButtonPannelOneLine { ButtonPannelOneLine::new(Vec::new(), true) }
 
 pub enum SubWindow {
   Red,
@@ -189,6 +210,10 @@ impl<'a> Window<'a> {
 
     panels.push(Box::new(StatusPannel::new()));
 
+    //panels.push(Box::new(ParamsPannel::new()));
+    panels.push(Box::new(get_params_page()));
+    panels.push(Box::new(get_empty_foot()));
+
     Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios, status_bar: true }
   }
 
@@ -199,11 +224,14 @@ impl<'a> Window<'a> {
   fn switch_window(&mut self, which: u16) {
     match which {
       // active queue
+      // le numero initialisé désigne l'index dans "panels" (Window new)
       1 => { self.clean(); self.green = 1; self.yellow = 2; self.status_bar = true; },
       // search
       2 => { self.clean(); self.green = 5; self.yellow = 4; self.status_bar = false; },
       // search radio
       3 => { self.clean(); self.green = 6; self.yellow = 7; self.status_bar = false; },
+      // params
+      6 => { self.clean(); self.green = 9; self.yellow = 10; self.status_bar = false; },
       _ => {}
     }
   }
@@ -227,9 +255,17 @@ impl<'a> Window<'a> {
             self.panels[1].set_current(&title);
             self.current_song = title;
 
+            let filename = song.file;
+            let ext = get_extension_from_filename(&filename);
+            debug!("{}", ext.unwrap());
+
             // compute title for the status bar
             for (key, value) in &song.tags {
               title_status = title_status + &String::from(" ") + &key.clone() + &String::from(": ") + &value.clone();
+            }
+            if (ext.is_some()) {
+              let upext = ext.unwrap().chars().flat_map(|c| c.to_uppercase()).collect::<String>();
+              title_status = title_status + &String::from(" Format: ") + &String::from(upext);
             }
             self.panels[8].set_current(&title_status);
             refresh = true;
@@ -280,6 +316,9 @@ impl<'a> Window<'a> {
         self.mpc.play();
       },
       Some(Action::Pause) => {
+      },
+      Some(Action::Rescan) => {
+        self.mpc.rescan();
       },
       Some(Action::DownSearch(which)) => {
         for i in 3..14 {

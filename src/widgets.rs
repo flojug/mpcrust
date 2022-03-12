@@ -29,6 +29,8 @@ pub enum Action {
     Stop,
     Pause,
     Search(String),
+    Rescan,
+    Restart
 }
 
 
@@ -384,6 +386,104 @@ impl Widget for Keyboard {
     }
 }
 
+
+#[derive(Debug)]
+pub struct ButtonPannelMultiLine {
+    buttons: Vec<Button>,
+    one_click: bool
+}
+
+impl ButtonPannelMultiLine {
+    pub fn new(buttons: Vec<Button>, one_click: bool) -> ButtonPannelMultiLine {
+        ButtonPannelMultiLine {buttons, one_click}
+    }
+}
+
+impl Widget for ButtonPannelMultiLine {
+    fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
+
+        let mut idx: u16 = 0;
+        for button in &mut self.buttons {
+            let mut scbox2 = scbox.clone();
+            scbox2.y = scbox2.y + idx;
+            (*button).draw(sc, scbox2);
+            idx = idx + 1;
+        }
+    }
+
+    fn touch(&mut self, touch: Touch) -> Option<Action> {
+
+        let mut ret = None;
+
+        // find index which button is over
+        // per default it is the selected
+        let mut idx: usize = 0;
+        for button in &self.buttons {
+            if (*button).state == ItemState::Selected {
+                break;
+            }
+            idx = idx + 1;
+        }
+
+        if (touch == Touch::TouchUp) && (idx > 0) {  // up
+            self.buttons[idx].state = ItemState::NotSelected;
+            self.buttons[idx-1].state = ItemState::Selected;
+            if self.one_click {
+                // force action when selected
+                return self.buttons[idx-1].action.clone();
+            } else {
+                return None;
+            }
+        }
+
+        if (touch == Touch::TouchDown) && (idx < self.buttons.len()-1) {  // down
+            self.buttons[idx].state = ItemState::NotSelected;
+            self.buttons[idx+1].state = ItemState::Selected;
+            if self.one_click {
+                // force action when selected
+                return self.buttons[idx+1].action.clone();
+            } else {
+                return None;
+            }
+        }
+
+        if touch == Touch::TouchPlay {
+            if let Some(idx) = self.buttons.iter().position(|item| (*item).state == ItemState::Selected) {
+                match self.buttons[idx].action {
+                    Some(Action::Rescan) => return Some(Action::Rescan),
+                    Some(Action::Restart) => return Some(Action::Restart),
+                    _=> return None
+                }
+            } else {
+                return None;
+            }
+        }
+
+        // test if button known
+        let test: Vec<&mut Button> = self.buttons.iter_mut()
+            .filter(|button| (*button).touch == touch).collect();
+
+        if test.len() == 0 {
+            return None;
+        }
+
+        self.buttons.iter_mut()
+            .filter(|button| (*button).state == ItemState::Selected)
+            .for_each(|button| (*button).state = ItemState::NotSelected);
+
+        self.buttons.iter_mut()
+            .filter(|button| (*button).touch == touch)
+            .for_each(|button| (*button).state = ItemState::Selected);
+
+
+        if let Some(butt) = self.buttons.iter_mut().find(|button|(*button).state == ItemState::Selected ) {
+            ret = butt.action.clone();
+        }
+        ret
+    }
+}
+
+
 #[derive(Debug)]
 pub struct ButtonPannelOneLine {
     buttons: Vec<Button>,
@@ -538,7 +638,7 @@ impl Widget for StatusPannel {
       sc.flush();
 
       // rotate
-      self.idx = (self.idx + 1) % stbarwidth;
+      self.idx = (self.idx + 1) % self.item.len();
     }
 
     fn set_current(&mut self, s: &String) {

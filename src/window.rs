@@ -77,19 +77,19 @@ impl TouchTranslator {
 
 fn get_buttons_1() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-QUEUE", ItemState::Selected, Touch::Touch1, color::Rgb(255,0,0), Some(Action::SwitchWindow(1))));
-    v.push(Button::new("2-SEARCH", ItemState::NotSelected, Touch::Touch2, color::Rgb(255,0,0), Some(Action::SwitchWindow(2))));
-    v.push(Button::new("3-RADIO", ItemState::NotSelected, Touch::Touch3, color::Rgb(255,0,0), Some(Action::SwitchWindow(3))));
-    v.push(Button::new("4-INF", ItemState::NotSelected, Touch::Touch4, color::Rgb(255,0,0), Some(Action::SwitchWindow(4))));
-    v.push(Button::new("5-LISTS", ItemState::NotSelected, Touch::Touch5, color::Rgb(255,0,0), Some(Action::SwitchWindow(5))));
-    v.push(Button::new("6-PARAMS", ItemState::NotSelected, Touch::Touch6, color::Rgb(255,0,0), Some(Action::SwitchWindow(6))));
+    v.push(Button::new(" QUEUE ", ItemState::Selected, Touch::Touch1, color::Rgb(255,0,0), Some(Action::SwitchWindow(1))));
+    v.push(Button::new(" SEARCH ", ItemState::NotSelected, Touch::Touch2, color::Rgb(255,0,0), Some(Action::SwitchWindow(2))));
+    v.push(Button::new(" RADIO ", ItemState::NotSelected, Touch::Touch3, color::Rgb(255,0,0), Some(Action::SwitchWindow(3))));
+    //v.push(Button::new(" INF ", ItemState::NotSelected, Touch::Touch4, color::Rgb(255,0,0), Some(Action::SwitchWindow(4))));
+    //v.push(Button::new(" LISTS ", ItemState::NotSelected, Touch::Touch5, color::Rgb(255,0,0), Some(Action::SwitchWindow(5))));
+    v.push(Button::new(" PARAMS ", ItemState::NotSelected, Touch::Touch6, color::Rgb(255,0,0), Some(Action::SwitchWindow(6))));
     v
 }
 
 fn get_params_menus() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-RESCAN MUSIC ", ItemState::Selected, Touch::Touch1, color::Rgb(0,255,0), Some(Action::Rescan)));
-    v.push(Button::new("2-RESTART", ItemState::NotSelected, Touch::Touch2, color::Rgb(0,255,0), Some(Action::Restart)));
+    v.push(Button::new("RESCAN MUSIC ", ItemState::Selected, Touch::Touch1, color::Rgb(0,255,0), Some(Action::Rescan)));
+    v.push(Button::new("RESTART", ItemState::NotSelected, Touch::Touch2, color::Rgb(0,255,0), Some(Action::Restart)));
     v
 }
 
@@ -107,17 +107,17 @@ fn get_params_menus() -> Vec<Button> {
 
 fn get_buttons_3() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-PLAY", ItemState::Selected, Touch::Touch1, color::Rgb(255,255,0), Some(Action::Play)));
-    v.push(Button::new("2-STOP", ItemState::NotSelected, Touch::Touch2, color::Rgb(255,255,0), Some(Action::Stop)));
-    v.push(Button::new("3-PAUSE", ItemState::NotSelected, Touch::Touch3, color::Rgb(255,255,0), Some(Action::Pause)));
-    v.push(Button::new("4-NEXT", ItemState::NotSelected, Touch::Touch4, color::Rgb(255,255,0), None));
-    v.push(Button::new("5-PREV", ItemState::NotSelected, Touch::Touch5, color::Rgb(255,255,0), None));
+    v.push(Button::new("PLAY", ItemState::Selected, Touch::Touch1, color::Rgb(255,255,0), Some(Action::Play)));
+    v.push(Button::new("STOP", ItemState::NotSelected, Touch::Touch2, color::Rgb(255,255,0), Some(Action::Stop)));
+    v.push(Button::new("PAUSE", ItemState::NotSelected, Touch::Touch3, color::Rgb(255,255,0), Some(Action::Pause)));
+    v.push(Button::new("NEXT", ItemState::NotSelected, Touch::Touch4, color::Rgb(255,255,0), None));
+    v.push(Button::new("PREV", ItemState::NotSelected, Touch::Touch5, color::Rgb(255,255,0), None));
     v
 }
 
 fn get_buttons_4() -> Vec<Button> {
     let mut v = Vec::new();
-    v.push(Button::new("1-SEARCH", ItemState::Selected, Touch::Touch1, color::Rgb(255,255,0), None));
+    v.push(Button::new("SEARCH", ItemState::Selected, Touch::Touch1, color::Rgb(255,255,0), None));
     v
 }
 
@@ -165,6 +165,7 @@ fn get_red_menu() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_
 //fn get_green_page_1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_2()) }
 
 fn get_yellow_page2() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_4(), true ) }
+
 fn get_yellow_page1() -> ButtonPannelOneLine { ButtonPannelOneLine::new(get_buttons_3(), true) }
 
 fn get_params_page() -> ButtonPannelMultiLine { ButtonPannelMultiLine::new(get_params_menus(), true) }
@@ -185,7 +186,6 @@ pub struct Window<'a>{
   yellow: usize,
   current_color: SubWindow,
   mpc: &'a mut Mpc,
-  idx_current_song: usize,
   current_song: String,
   radios: &'a mut RadioList,
   status_bar: bool,
@@ -198,23 +198,36 @@ impl<'a> Window<'a> {
     screen.clean();
 
     let mut panels: Vec<Box<dyn Widget>> = Vec::new();
+    // 0
     panels.push(Box::new(get_red_menu()));
+    // 1
     panels.push(Box::new(ListItemPannel::new(mpc.get_songs(), Some(Action::PlaySong(0)), None, None, Some(Action::PlaySong(0)))));
+    // 2
     panels.push(Box::new(get_yellow_page1()));
+    // 3
     panels.push(Box::new(get_yellow_page2()));
+    // 4
     panels.push(Box::new(get_keyboard()));
+    // 5
     panels.push(Box::new(ListItemPannel::new(mpc.navigate(), Some(Action::UpSearch(0)), Some(Action::DownSearch(0)), None, Some(Action::SelSearch(0, false)))));
     // radios
+    // 6
     panels.push(Box::new(ListItemPannel::new(radios.get_list(), None, None, None, Some(Action::SelRadio(0)))));
+    // 7
     panels.push(Box::new(get_keyboard()));
 
+    // 8
     panels.push(Box::new(StatusPannel::new()));
 
     //panels.push(Box::new(ParamsPannel::new()));
+    // 9
     panels.push(Box::new(get_params_page()));
+    // 10
     panels.push(Box::new(get_empty_foot()));
 
-    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, idx_current_song:0, current_song: String::from(""), radios, status_bar: true }
+    panels.push(Box::new(DurationPannel::new()));
+
+    Window {panels, screen, red: 0, green: 1, yellow: 2, current_color: SubWindow::Red, mpc, current_song: String::from(""), radios, status_bar: true }
   }
 
   pub fn stop(&mut self) {
@@ -257,23 +270,34 @@ impl<'a> Window<'a> {
 
             let filename = song.file;
             let ext = get_extension_from_filename(&filename);
-            debug!("{}", ext.unwrap());
+            //debug!("{}", ext.unwrap());
 
             // compute title for the status bar
             for (key, value) in &song.tags {
               title_status = title_status + &String::from(" ") + &key.clone() + &String::from(": ") + &value.clone();
             }
-            if (ext.is_some()) {
+            if ext.is_some() {
               let upext = ext.unwrap().chars().flat_map(|c| c.to_uppercase()).collect::<String>();
               title_status = title_status + &String::from(" Format: ") + &String::from(upext);
             }
+
             self.panels[8].set_current(&title_status);
+
+            let mut duration = String::from("180.0");
+            if song.duration.is_some() {
+              duration = song.duration.unwrap().num_seconds().to_string();
+            }
+            self.panels[11].set_current(&String::from(duration));
+
             refresh = true;
         }
     }
 
     // if status bar is present, refresh it
     if self.status_bar {
+      let scbox = ScreenBox::new(1, 14, 50, 1);
+      self.panels[11].draw(&mut self.screen, scbox);
+
       let scbox = ScreenBox::new(1, 15, 50, 1);
       self.panels[8].draw(&mut self.screen, scbox);
     }
@@ -408,9 +432,10 @@ impl<'a> Window<'a> {
       // }
       self.panels[self.yellow].draw(&mut self.screen, scbox);
     } else {
-      scbox = ScreenBox::new(1, 13, 50, 2);
+      scbox = ScreenBox::new(1, 13, 50, 1);
       self.panels[self.yellow].draw(&mut self.screen, scbox);
 
+      // status bar
       scbox = ScreenBox::new(1, 15, 50, 1);
       self.panels[8].draw(&mut self.screen, scbox);
     }

@@ -120,10 +120,10 @@ fn main() {
 
     loop {
         match stdin_channel.try_recv() {
-            // Ok(b'q') => {
-            //     wind.stop();
-            //     return;
-            // },
+            Ok(b'q') => {
+                wind.stop();
+                return;
+            },
             Ok(value8) => {
                 debug!("{:?}", value8);
                 let touch = touchst.get_value(value8);

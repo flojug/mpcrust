@@ -274,8 +274,6 @@ impl Widget for Keyboard {
 
         let mut draw_line = |line: &mut Vec<Key>, idx_line: u16| {
             sc.line(scbox.x, scbox.y+idx_line, &format!("{:1$}", " ", scbox.w as usize)[..], color::Rgb(0,0,0));
-            let nb_butt: u16 = (*line).len() as u16;
-            let rest: u16 = (scbox.w - 2*nb_butt) / 2;
             let mut idx: u16 = 0; //rest - 10;
             for key in line.iter_mut() {
                 let mut scbox2 = scbox.clone();
@@ -586,6 +584,8 @@ impl Widget for ButtonPannelOneLine {
     }
 }
 
+
+
 #[derive(Debug)]
 pub struct StatusPannel {
     item: String,
@@ -601,7 +601,7 @@ impl StatusPannel {
 
 impl Widget for StatusPannel {
     fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
-      // refresh each 300 ms
+      // refresh each 100 ms
       self.count = self.count + 1;
       if self.count<=3 {
         return;
@@ -610,7 +610,7 @@ impl Widget for StatusPannel {
 
       // cut the string to display according to
       // the width of status bar
-      let mut stbarwidth = scbox.w as usize;
+      let mut stbarwidth = scbox.w as usize - 1;
       stbarwidth = stbarwidth - 1;
 
       let mut s: String;
@@ -639,10 +639,60 @@ impl Widget for StatusPannel {
 
       // rotate
       self.idx = (self.idx + 1) % self.item.len();
-    }
+/*      self.idx = 0;
+      if self.item.len()>0 {
+            self.idx = (self.idx + 1) % self.item.len();
+      }
+*/    }
 
     fn set_current(&mut self, s: &String) {
         self.item = s.clone();
         self.idx = 0;
+    }
+}
+
+
+#[derive(Debug)]
+pub struct DurationPannel {
+    // duration in sec
+    duration: f32,
+    // time elapsed in sec
+    cursor: f32
+}
+
+impl DurationPannel {
+    pub fn new() -> DurationPannel {
+        DurationPannel { duration: 0.0, cursor: 0.0 }
+    }
+}
+
+impl Widget for DurationPannel {
+    fn draw(&mut self, sc: &mut MpcScreen, scbox: ScreenBox) {
+
+      let stbarwidth = scbox.w as usize;
+
+      // refresh each 100 ms
+      self.cursor = self.cursor + 0.1;
+
+      let nbstars = ((self.cursor/self.duration) * ((stbarwidth-2) as f32)) as usize;
+      //debug!("{} {} {}", self.cursor, self.duration, nbstars);
+
+      let mut fs: String = String::from("[");
+      for idx in 1..stbarwidth-1 {
+        if idx < nbstars {
+            fs = fs + &String::from("-");
+        } else {
+            fs = fs + &String::from(" ");
+        }
+      }
+      fs = fs + &String::from("]");
+
+      sc.line(scbox.x, scbox.y, &fs, color::Rgb(255,255,255));
+      sc.flush();
+    }
+
+    fn set_current(&mut self, s: &String) {
+        self.duration = s.parse().unwrap();
+        self.cursor = 0.0;
     }
 }

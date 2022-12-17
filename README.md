@@ -357,6 +357,12 @@ Compiler mpcrust sur le raspberry (pas de chaine de crosscompilation à mettre e
 
 Radios
 ==============
+
+Détecter format audio :
+https://crates.io/crates/av-stream-info-rust
+// utilise un site radiobrower pour récupérer les infos
+https://crates.io/crates/radiobrowser
+
 http://dir.xiph.org/yp.xml
 
     telnet ice2.ikoula.net-radio.fr 80
@@ -366,4 +372,6 @@ http://dir.xiph.org/yp.xml
 
 Utilisation
 ==============
+
+
 
